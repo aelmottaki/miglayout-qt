@@ -1,0 +1,75 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>net.miblounge</groupId>
+	<artifactId>qt.miglayout</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>qt.miglayout</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<!-- NOTE: We don't need a groupId specification because the group is 
+					org.apache.maven.plugins ...which is assumed by default. -->
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2-beta-5</version>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>net.miblounge.gradecalculator.gui.GUI</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>net.sf.qtjambi</groupId>
+				<artifactId>qtjambi-maven-plugin</artifactId>
+				<version>4.6.3_04</version>
+				<executions>
+					<execution>
+						<id>qtjambi</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!-- Specifies where sources are. This parameter is MANDATORY -->
+					<sourcesDir>src/main/java</sourcesDir>
+					<!-- following parameters aren't mandatory, they use defaults as specified 
+						here if not specified <translationsDir>src/main/resources/translations</translationsDir> 
+						<destinationDir>target/generated-sources/qtjambi</destinationDir> -->
+					<!-- cause -noobsolete switch for lupdate -->
+					<noObsoleteTranslations>true</noObsoleteTranslations>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.miglayout</groupId>
+			<artifactId>miglayout</artifactId>
+			<version>3.7.3.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.qtjambi</groupId>
+			<artifactId>qtjambi</artifactId>
+			<version>4.6.3</version>
+		</dependency>
+	</dependencies>
+</project>
