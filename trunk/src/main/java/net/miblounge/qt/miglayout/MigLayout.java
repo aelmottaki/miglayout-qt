@@ -458,6 +458,10 @@ public final class MigLayout extends QLayout implements Externalizable {
 	/*
 	 * ************** QLAYOUT *********************
 	 */
+	
+	public void addWidget(final QWidget widget, final Object constraints) {
+		addItem(new QWidgetItem(widget), constraints);
+	}
 
 	public void addItem(final QLayoutItemInterface item, final Object constraints) {
 		minimumSize = null;
