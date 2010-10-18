@@ -14,62 +14,79 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-	<build>
-		<plugins>
-			<plugin>
-				<!-- NOTE: We don't need a groupId specification because the group is 
-					org.apache.maven.plugins ...which is assumed by default. -->
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2-beta-5</version>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<mainClass>net.miblounge.gradecalculator.gui.GUI</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>net.sf.qtjambi</groupId>
-				<artifactId>qtjambi-maven-plugin</artifactId>
-				<version>4.6.3_04</version>
-				<executions>
-					<execution>
-						<id>qtjambi</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<!-- Specifies where sources are. This parameter is MANDATORY -->
-					<sourcesDir>src/main/java</sourcesDir>
-					<!-- following parameters aren't mandatory, they use defaults as specified 
-						here if not specified <translationsDir>src/main/resources/translations</translationsDir> 
-						<destinationDir>target/generated-sources/qtjambi</destinationDir> -->
-					<!-- cause -noobsolete switch for lupdate -->
-					<noObsoleteTranslations>true</noObsoleteTranslations>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+	<profiles>
+		<profile>
+			<id>linux</id>
+			<activation>
+				<os>
+					<name>Linux</name>
+					<!-- <arch>amd64</arch> -->
+				</os>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.miglayout</groupId>
+					<artifactId>miglayout</artifactId>
+					<version>3.7.3.1</version>
+					<type>jar</type>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.miglayout</groupId>
-			<artifactId>miglayout</artifactId>
-			<version>3.7.3.1</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.qtjambi</groupId>
-			<artifactId>qtjambi</artifactId>
-			<version>4.6.3</version>
-		</dependency>
-	</dependencies>
+		<profile>
+			<id>win</id>
+			<activation>
+				<os>
+					<family>windows</family>
+					<!-- <arch>amd64</arch> -->
+					<!-- <version>5.1.2600</version> -->
+				</os>
+			</activation>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>net.sf.qtjambi</groupId>
+						<artifactId>qtjambi-maven-plugin</artifactId>
+						<version>4.6.3_04</version>
+						<executions>
+							<execution>
+								<id>qtjambi</id>
+								<goals>
+									<goal>generate</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<!-- Specifies where sources are. This parameter is MANDATORY -->
+							<sourcesDir>src/main/java</sourcesDir>
+							<!-- following parameters aren't mandatory, they use defaults as specified 
+								here if not specified <translationsDir>src/main/resources/translations</translationsDir> 
+								<destinationDir>target/generated-sources/qtjambi</destinationDir> -->
+							<!-- cause -noobsolete switch for lupdate -->
+							<noObsoleteTranslations>true</noObsoleteTranslations>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+
+			<dependencies>
+				<dependency>
+					<groupId>net.sf.qtjambi</groupId>
+					<artifactId>qtjambi</artifactId>
+					<version>4.6.3</version>
+				</dependency>
+				<dependency>
+					<groupId>com.miglayout</groupId>
+					<artifactId>miglayout</artifactId>
+					<version>3.7.3.1</version>
+					<type>jar</type>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+
+	</profiles>
+	
 </project>
