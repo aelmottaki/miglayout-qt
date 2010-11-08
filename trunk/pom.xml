@@ -3,12 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>net.miblounge</groupId>
-	<artifactId>qt.miglayout</artifactId>
+	<artifactId>miglayout-qt</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>qt.miglayout</name>
-	<url>http://maven.apache.org</url>
+	<name>miglayout-qt</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
