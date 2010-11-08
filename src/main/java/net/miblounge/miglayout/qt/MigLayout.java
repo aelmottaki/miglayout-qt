@@ -1,25 +1,23 @@
 /*
- * Copyright (c) 2010, Nikolaus Moll. (developer (at) miblounge (dot) net)
+ * Copyright (c) 2010, Michael Hengler (developer (at) hengler (dot) de),
+ *                     Nikolaus Moll (developer (at) miblounge (dot) net).
  * All rights reserved.
  * 
- * License (BSD):
- * ==============
- *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  * * Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
+ *   notice, this list of conditions and the following disclaimer.
  * * Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- * * Neither the name of miblounge.net nor the
- * names of its contributors may be used to endorse or promote products
- * derived from this software without specific prior written permission.
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ * * Neither the name of the [QTPRJ] nor the
+ *   names of its contributors may be used to endorse or promote products
+ *   derived from this software without specific prior written permission.
  * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY
+ * ARE DISCLAIMED. IN NO EVENT SHALL [QTPRJ] BE LIABLE FOR ANY
  * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
@@ -27,14 +25,8 @@
  * LIABILITY, OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
- * 
- * @version 1.0
- * 
- * @author Nikolaus Moll
- * Date: 2010-oct-14
- * 
- * based on source code by Mikael Grev, MiG InfoCom AB */
-package net.miblounge.qt.miglayout;
+ */
+package net.miblounge.miglayout.qt;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -137,6 +129,7 @@ public final class MigLayout extends QLayout implements Externalizable {
 	 * @param rowConstraints The constraints for the rows in the grid. <code>null</code> will be treated as "".
 	 */
 	public MigLayout(final String layoutConstraints, final String colConstraints, final String rowConstraints) {
+		System.out.println("MigLayout: " + layoutConstraints + " / "+ colConstraints + " / " + rowConstraints);
 		setLayoutConstraints(layoutConstraints);
 		setColumnConstraints(colConstraints);
 		setRowConstraints(rowConstraints);
@@ -445,10 +438,12 @@ public final class MigLayout extends QLayout implements Externalizable {
 		return LayoutUtil.getSerializedObject(this);
 	}
 
+	@Override
 	public void readExternal(final ObjectInput in) throws IOException, ClassNotFoundException {
 		LayoutUtil.setSerializedObject(this, LayoutUtil.readAsXML(in));
 	}
 
+	@Override
 	public void writeExternal(final ObjectOutput out) throws IOException {
 		if (getClass() == MigLayout.class) {
 			LayoutUtil.writeAsXML(out, this);
@@ -507,10 +502,11 @@ public final class MigLayout extends QLayout implements Externalizable {
 
 	@Override
 	public QSize minimumSize() {
-		if (minimumSize == null) {
-			minimumSize = calcSize(LayoutUtil.MIN);
-		}
-		return minimumSize;
+		return calcSize(LayoutUtil.MIN);
+//		if (minimumSize == null) {
+//			minimumSize = calcSize(LayoutUtil.MIN);
+//		}
+//		return minimumSize;
 	}
 
 	@Override
