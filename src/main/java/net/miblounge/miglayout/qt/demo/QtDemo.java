@@ -1,3 +1,36 @@
+/*
+ * Copyright (c) 2010, Nikolaus Moll. (developer (at) miblounge (dot) net)
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice, this list
+ * of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this
+ * list of conditions and the following disclaimer in the documentation and/or other
+ * materials provided with the distribution.
+ * Neither the name of the MiG InfoCom AB nor the names of its contributors may be
+ * used to endorse or promote products derived from this software without specific
+ * prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
+ * 
+ * @version 1.0
+ * 
+ * @author Nikolaus Moll
+ * Date: 2010-nov-09
+ * 
+ * based on source code by Mikael Grev, MiG InfoCom AB
+ */
 package net.miblounge.miglayout.qt.demo;
 
 import java.util.ArrayList;
@@ -43,90 +76,132 @@ import com.trolltech.qt.gui.QWidgetItem;
 public class QtDemo extends QMainWindow {
 	public static final int SELECTED_INDEX = 0;
 
-	private static final String[][] panels = new String[][] {
+	private static final String[][] PANELS = new String[][] {
 			//			{"BugTestApp", "BugTestApp, Disregard"},
 			{"Welcome", "\n\n         \"MigLayout makes complex layouts easy and normal layouts one-liners.\""},
 			{
 					"Quick Start",
-					"This is an example of how to build a common dialog type. Note that there are no special components, nested panels or absolute references to cell positions. If you look at the source code you will see that the layout code is very simple to understand."},
+					"This is an example of how to build a common dialog type. Note that there are no special components, "
+						+ "nested panels or absolute references to cell positions. If you look at the source code you will see that "
+						+ "the layout code is very simple to understand."},
 			{
 					"Plain",
-					"A simple example on how simple it is to create normal forms. No builders needed since the whole layout manager works like a builder."},
+					"A simple example on how simple it is to create normal forms. No builders needed since the whole layout manager "
+						+ "works like a builder."},
 			{
 					"Alignments",
-					"Shows how the alignment of components are specified. At the top/left is the alignment for the column/row. The components have no alignments specified.\n\nNote that baseline alignment will be interpreted as 'center' before JDK 6."},
+					"Shows how the alignment of components are specified. At the top/left is the alignment for the column/row. "
+						+ "The components have no alignments specified.\n\nNote that baseline alignment will be interpreted as "
+						+ "'center' before JDK 6."},
 			{
 					"Cell Alignments",
-					"Shows how components are aligned when both column/row alignments and component constraints are specified. At the top/left are the alignment for the column/row and the text on the buttons is the component constraint that will override the column/row alignment if it is an alignment.\n\nNote that baseline alignment will be interpreted as 'center' before JDK 6."},
+					"Shows how components are aligned when both column/row alignments and component constraints are specified. "
+						+ "At the top/left are the alignment for the column/row and the text on the buttons is the component "
+						+ "constraint that will override the column/row alignment if it is an alignment.\n\nNote that baseline "
+						+ "alignment will be interpreted as 'center' before JDK 6."},
 			{
 					"Basic Sizes",
-					"A simple example that shows how to use the column or row min/preferred/max size to set the sizes of the contained components and also an example that shows how to do this directly in the component constraints."},
+					"A simple example that shows how to use the column or row min/preferred/max size to set the sizes of the "
+						+ "contained components and also an example that shows how to do this directly in the component constraints."},
 			{
 					"Growing",
-					"A simple example that shows how to use the growx and growy constraint to set the sizes and how they should grow to fit the available size. Both the column/row and the component grow/shrink constraints can be set, but the components will always be confined to the space given by its column/row."},
+					"A simple example that shows how to use the growx and growy constraint to set the sizes and how they should "
+						+ "grow to fit the available size. Both the column/row and the component grow/shrink constraints can be "
+						+ "set, but the components will always be confined to the space given by its column/row."},
 			{
 					"Grow Shrink",
-					"Demonstrates the very flexible grow and shrink constraints that can be set on a component.\nComponents can be divided into grow/shrink groups and also have grow/shrink weight within each of those groups.\n\nBy default "
-						+ "components shrink to their inherent (or specified) minimum size, but they don't grow."},
+					"Demonstrates the very flexible grow and shrink constraints that can be set on a component.\nComponents can "
+						+ "be divided into grow/shrink groups and also have grow/shrink weight within each of those groups.\n\nBy "
+						+ "default components shrink to their inherent (or specified) minimum size, but they don't grow."},
 			{
 					"Span",
-					"This example shows the powerful spanning and splitting that can be specified in the component constraints. With spanning any number of cells can be merged with the additional option to split that space for more than one component. This makes layouts very flexible and reduces the number of times you will need nested panels to very few."},
+					"This example shows the powerful spanning and splitting that can be specified in the component constraints. "
+						+ "With spanning any number of cells can be merged with the additional option to split that space for more "
+						+ "than one component. This makes layouts very flexible and reduces the number of times you will need nested "
+						+ "panels to very few."},
 			{
 					"Flow Direction",
-					"Shows the different flow directions. Flow direction for the layout specifies if the next cell will be in the x or y dimension. Note that it can be a different flow direction in the slit cell (the middle cell is slit in two). Wrap is set to 3 for all panels."},
+					"Shows the different flow directions. Flow direction for the layout specifies if the next cell will be in "
+						+ "the x or y dimension. Note that it can be a different flow direction in the slit cell (the middle cell "
+						+ "is slit in two). Wrap is set to 3 for all panels."},
 			{
 					"Grouping",
-					"Sizes for both components and columns/rows can be grouped so they get the same size. For instance buttons in a button bar can be given a size-group so that they will all get "
-						+ "the same minimum and preferred size (the largest within the group). Size-groups can be set for the width, height or both."},
+					"Sizes for both components and columns/rows can be grouped so they get the same size. For instance buttons in "
+						+ "a button bar can be given a size-group so that they will all get the same minimum and preferred size "
+						+ "(the largest within the group). Size-groups can be set for the width, height or both."},
 			{
 					"Units",
-					"Demonstrates the basic units that are understood by MigLayout. These units can be extended by the user by adding one or more UnitConverter(s)."},
+					"Demonstrates the basic units that are understood by MigLayout. These units can be extended by the user by "
+						+ "adding one or more UnitConverter(s)."},
 			{
 					"Component Sizes",
-					"Minimum, preferred and maximum component sizes can be overridden in the component constraints using any unit type. The format to do this is short and simple to understand. You simply specify the "
-						+ "min, preferred and max sizes with a colon between.\n\nAbove are some examples of this. An exclamation mark means that the value will be used for all sizes."},
+					"Minimum, preferred and maximum component sizes can be overridden in the component constraints using any unit "
+						+ "type. The format to do this is short and simple to understand. You simply specify the "
+						+ "min, preferred and max sizes with a colon between.\n\nAbove are some examples of this. An exclamation "
+						+ "mark means that the value will be used for all sizes."},
 			{"Bound Sizes", "Shows how to create columns that are stable between tabs using minimum sizes."},
 			{
 					"Cell Position",
-					"Even though MigLayout has automatic grid flow you can still specify the cell position explicitly. You can even combine absolute (x, y) and flow (skip, wrap and newline) constraints to build your layout."},
+					"Even though MigLayout has automatic grid flow you can still specify the cell position explicitly. You can even "
+						+ "combine absolute (x, y) and flow (skip, wrap and newline) constraints to build your layout."},
 			{
 					"Orientation",
-					"MigLayout supports not only right-to-left orientation, but also bottom-to-top. You can even set the flow direction so that the flow is vertical instead of horizontal. It will automatically "
-						+ "pick up if right-to-left is to be used depending on the ComponentWrapper, but it can also be manually set for every layout."},
+					"MigLayout supports not only right-to-left orientation, but also bottom-to-top. You can even set the flow "
+						+ "direction so that the flow is vertical instead of horizontal. It will automatically "
+						+ "pick up if right-to-left is to be used depending on the ComponentWrapper, but it can also be manually "
+						+ "set for every layout."},
 			{
 					"Absolute Position",
-					"Demonstrates the option to place any number of components using absolute coordinates. This can be just the position (if min/preferred size) using \"x y p p\" format or"
-						+ "the bounds using the \"x1 y1 x2 y2\" format. Any unit can be used and percent is relative to the parent.\nAbsolute components will not disturb the flow or occupy cells in the grid. "
+					"Demonstrates the option to place any number of components using absolute coordinates. This can be just the "
+						+ "position (if min/preferred size) using \"x y p p\" format or"
+						+ "the bounds using the \"x1 y1 x2 y2\" format. Any unit can be used and percent is relative to the parent.\n"
+						+ "Absolute components will not disturb the flow or occupy cells in the grid. "
 						+ "Absolute positioned components will be taken into account when calculating the container's preferred size."},
 			{
 					"Component Links",
-					"Components can be linked to any side of any other component. It can be a forward, backward or cyclic link references, as long as it is stable and won't continue to change value over many iterations."
-						+ "Links are referencing the ID of another component. The ID can be overridden by the component's constrains or is provided by the ComponentWrapper. For instance it will use the component's 'name' on Swing.\n"
-						+ "Since the links can be combined with any expression (such as 'butt1.x+10' or 'max(button.x, 200)' the links are very customizable."},
+					"Components can be linked to any side of any other component. It can be a forward, backward or cyclic link "
+						+ "references, as long as it is stable and won't continue to change value over many iterations."
+						+ "Links are referencing the ID of another component. The ID can be overridden by the component's "
+						+ "constrains or is provided by the ComponentWrapper. For instance it will use the component's 'name' "
+						+ "on Swing.\n"
+						+ "Since the links can be combined with any expression (such as 'butt1.x+10' or 'max(button.x, 200)' the "
+						+ "links are very customizable."},
 			{
 					"Docking",
-					"Docking components can be added around the grid. The docked component will get the whole width/height on the docked side by default, however this can be overridden. When all docked components are laid out, whatever space "
-						+ "is left will be available for the normal grid laid out components. Docked components does not in any way affect the flow in the grid.\n\nSince the docking runs in the same code path "
-						+ "as the normal layout code the same properties can be specified for the docking components. You can for instance set the sizes and alignment or link other components to their docked component's bounds."},
+					"Docking components can be added around the grid. The docked component will get the whole width/height on the "
+						+ "docked side by default, however this can be overridden. When all docked components are laid out, whatever "
+						+ "space is left will be available for the normal grid laid out components. Docked components does not in "
+						+ "any way affect the flow in the grid.\n\nSince the docking runs in the same code path "
+						+ "as the normal layout code the same properties can be specified for the docking components. You can for "
+						+ "instance set the sizes and alignment or link other components to their docked component's bounds."},
 			{
 					"Button Bars",
-					"Button order is very customizable and are by default different on the supported platforms. E.g. Gaps, button order and minimum button size are properties that are 'per platform'. MigLayout picks up the current platform automatically and adjusts the button order and minimum button size accordingly, all without using a button builder or any other special code construct."},
+					"Button order is very customizable and are by default different on the supported platforms. E.g. Gaps, button "
+						+ "order and minimum button size are properties that are 'per platform'. MigLayout picks up the current "
+						+ "platform automatically and adjusts the button order and minimum button size accordingly, all without "
+						+ "using a button builder or any other special code construct."},
 			{
 					"Debug",
-					"Demonstrates the non-intrusive way to get visual debugging aid. There is no need to use a special DebugPanel or anything that will need code changes. The user can simply turn on debug on the layout manager by using the 'debug' constraint and it will "
-						+ "continuously repaint the panel with debug information on top. This means you don't have to change your code to debug!"},
+					"Demonstrates the non-intrusive way to get visual debugging aid. There is no need to use a special DebugPanel "
+						+ "or anything that will need code changes. The user can simply turn on debug on the layout manager by using "
+						+ "the 'debug' constraint and it will continuously repaint the panel with debug information on top. This "
+						+ "means you don't have to change your code to debug!"},
 			{
 					"Layout Showdown",
-					"This is an implementation of the Layout Showdown posted on java.net by John O'Conner. The first tab is a pure implemenetation of the showdown that follows all the rules. The second tab is a slightly fixed version that follows some improved layout guidelines."
-						+ "The source code is for bothe the first and for the fixed version. Note the simplification of the code for the fixed version. Writing better layouts with MiG Layout is reasier that writing bad.\n\nReference: http://weblogs.java.net/blog/joconner/archive/2006/10/more_informatio.html"},
+					"This is an implementation of the Layout Showdown posted on java.net by John O'Conner. The first tab is a pure"
+						+ " implemenetation of the showdown that follows all the rules. The second tab is a slightly fixed version "
+						+ "that follows some improved layout guidelines. "
+						+ "The source code is for bothe the first and for the fixed version. Note the simplification of the code for "
+						+ "the fixed version. Writing better layouts with MiG Layout is reasier that writing bad.\n\nReference: "
+						+ "http://weblogs.java.net/blog/joconner/archive/2006/10/more_informatio.html"},
 			{
 					"API Constraints1",
-					"This dialog shows the constraint API added to v2.0. It works the same way as the string constraints but with chained method calls. See the source code for details."},
+					"This dialog shows the constraint API added to v2.0. It works the same way as the string constraints but with "
+						+ "chained method calls. See the source code for details."},
 			{
 					"API Constraints2",
-					"This dialog shows the constraint API added to v2.0. It works the same way as the string constraints but with chained method calls. See the source code for details."},};
-
-	private static int DOUBLE_BUFFER = 0;//SWT.DOUBLE_BUFFERED;
+					"This dialog shows the constraint API added to v2.0. It works the same way as the string constraints but with "
+						+ "chained method calls. See the source code for details."},};
 
 	private static int benchRuns = 0;
 	private static long startupMillis = 0;
@@ -145,58 +220,11 @@ public class QtDemo extends QMainWindow {
 	private QWidget form;
 	private QWidget windowMovedListeningWidget = null;
 
-	public static void main(final String[] args) {
-		startupMillis = System.currentTimeMillis();
-
-		if (args.length > 0) {
-			for (int i = 0; i < args.length; i++) {
-				final String arg = args[i].trim();
-				if (arg.startsWith("-bench")) {
-					benchRuns = 10;
-					try {
-						if (arg.length() > 6) {
-							benchRuns = Integer.parseInt(arg.substring(6));
-						}
-					} catch (final Exception ex) {
-					}
-				} else if (arg.startsWith("-bout")) {
-					benchOutFileName = arg.substring(5);
-				} else if (arg.startsWith("-append")) {
-					append = true;
-				} else if (arg.startsWith("-verbose")) {
-					runTimeSB = new StringBuffer(256);
-				} else {
-					System.out.println("Usage: [-bench[#_of_runs]] [-bout[benchmark_results_filename]] [-append]\n"
-						+ " -bench Run demo as benchmark. Run count can be appended. 10 is default.\n"
-						+ " -bout  Benchmark results output filename.\n"
-						+ " -append Appends the result to the \"-bout\" file.\n"
-						+ " -verbose Print the times of every run.\n"
-						+ "\nExamples:\n"
-						+ " java -jar swtdemoapp.jar -bench -boutC:/bench.txt -append\n"
-						+ " java -jar swtdemoapp.jar -bench20\n"
-						+ "NOTE! swt-win32-3232.dll must be in the current directory!");
-					System.exit(0);
-				}
-			}
-		}
-
-		if (benchRuns == 0) {
-			LayoutUtil.setDesignTime(null, true);
-		}
-
-		QApplication.initialize(args);
-
-		final QtDemo gui = new QtDemo();
-		gui.show();
-
-		QApplication.exec();
-	}
-
-	final QListWidget pickerList;
-	final QWidget layoutDisplayPanel;
-	final MigLayout layoutDisplayPanelLayout;
-	final QTextEdit descrTextArea;
-	final QWidget shell;
+	private final QListWidget pickerList;
+	private final QWidget layoutDisplayPanel;
+	private final MigLayout layoutDisplayPanelLayout;
+	private final QTextEdit descrTextArea;
+	private final QWidget shell;
 
 	public QtDemo() {
 		setWindowTitle("MigLayout QT Demo v2.5 - Mig Layout v" + LayoutUtil.getVersion());
@@ -213,8 +241,8 @@ public class QtDemo extends QMainWindow {
 		pickerList.setBackgroundRole(layoutPickerTabPane.backgroundRole());
 		// font bold...
 		layoutPickerTabPane.addTab(pickerList, "Example Browser");
-		for (int i = 0; i < panels.length; i++) {
-			pickerList.addItem(panels[i][0]);
+		for (int i = 0; i < PANELS.length; i++) {
+			pickerList.addItem(PANELS[i][0]);
 		}
 
 		layoutDisplayPanel = new QWidget(shell);
@@ -263,6 +291,53 @@ public class QtDemo extends QMainWindow {
 		setCentralWidget(shell);
 	}
 
+	public static void main(final String[] args) {
+		startupMillis = System.currentTimeMillis();
+
+		if (args.length > 0) {
+			for (int i = 0; i < args.length; i++) {
+				final String arg = args[i].trim();
+				if (arg.startsWith("-bench")) {
+					benchRuns = 10;
+					try {
+						if (arg.length() > 6) {
+							benchRuns = Integer.parseInt(arg.substring(6));
+						}
+					} catch (final Exception ex) {
+					}
+				} else if (arg.startsWith("-bout")) {
+					benchOutFileName = arg.substring(5);
+				} else if (arg.startsWith("-append")) {
+					append = true;
+				} else if (arg.startsWith("-verbose")) {
+					runTimeSB = new StringBuffer(256);
+				} else {
+					System.out.println("Usage: [-bench[#_of_runs]] [-bout[benchmark_results_filename]] [-append]\n"
+						+ " -bench Run demo as benchmark. Run count can be appended. 10 is default.\n"
+						+ " -bout  Benchmark results output filename.\n"
+						+ " -append Appends the result to the \"-bout\" file.\n"
+						+ " -verbose Print the times of every run.\n"
+						+ "\nExamples:\n"
+						+ " java -jar swtdemoapp.jar -bench -boutC:/bench.txt -append\n"
+						+ " java -jar swtdemoapp.jar -bench20\n"
+						+ "NOTE! swt-win32-3232.dll must be in the current directory!");
+					System.exit(0);
+				}
+			}
+		}
+
+		if (benchRuns == 0) {
+			LayoutUtil.setDesignTime(null, true);
+		}
+
+		QApplication.initialize(args);
+
+		final QtDemo gui = new QtDemo();
+		gui.show();
+
+		QApplication.exec();
+	}
+
 	public QWidget createWelcome(final QWidget parent) {
 
 		final QTabWidget tabbedPane = new QTabWidget(parent);
@@ -291,7 +366,7 @@ public class QtDemo extends QMainWindow {
 		return tabbedPane;
 	}
 
-	public QWidget createQuick_Start(final QWidget parent) {
+	public QWidget createQuickStart(final QWidget parent) {
 		final QTabWidget tabbedPane = new QTabWidget(parent);
 
 		final MigLayout lm = new MigLayout("wrap", "[right][fill,sizegroup]unrel[right][fill,sizegroup]", "");
@@ -424,7 +499,7 @@ public class QtDemo extends QMainWindow {
 		return tabbedPane;
 	}
 
-	public QWidget createCell_Alignments(final QWidget parent) {
+	public QWidget createCellAlignments(final QWidget parent) {
 		final QTabWidget tabbedPane = new QTabWidget(parent);
 
 		// Horizontal
@@ -468,7 +543,7 @@ public class QtDemo extends QMainWindow {
 		return tabbedPane;
 	}
 
-	public QWidget createBasic_Sizes(final QWidget parent) {
+	public QWidget createBasicSizes(final QWidget parent) {
 		final QTabWidget tabbedPane = new QTabWidget(parent);
 
 		// Horizontal
@@ -582,7 +657,7 @@ public class QtDemo extends QMainWindow {
 		return tabbedPane;
 	}
 
-	public QWidget createGrow_Shrink(final QWidget parent) {
+	public QWidget createGrowShrink(final QWidget parent) {
 		final QTabWidget tabbedPane = new QTabWidget(parent);
 
 		// shrink tab
@@ -707,7 +782,7 @@ public class QtDemo extends QMainWindow {
 		return tabbedPane;
 	}
 
-	public QWidget createFlow_Direction(final QWidget parent) {
+	public QWidget createFlowDirection(final QWidget parent) {
 		final QTabWidget tabbedPane = new QTabWidget(parent);
 
 		createFlowPanel(tabbedPane, "Layout: flowx, Cell: flowx", "", "flowx");
@@ -884,7 +959,7 @@ public class QtDemo extends QMainWindow {
 		return tabbedPane;
 	}
 
-	public QWidget createComponent_Sizes(final QWidget parent) {
+	public QWidget createComponentSizes(final QWidget parent) {
 		final QTabWidget tabbedPane = new QTabWidget();
 
 		final QGridLayout tabPanelLayout = new QGridLayout();
@@ -928,7 +1003,7 @@ public class QtDemo extends QMainWindow {
 		return tabbedPane;
 	}
 
-	public QWidget createBound_Sizes(final QWidget parent) {
+	public QWidget createBoundSizes(final QWidget parent) {
 		final QTabWidget tabbedPane = new QTabWidget();
 
 		for (int i = 0; i < 2; i++) { // Jumping for 0 and Stable for 1
@@ -965,7 +1040,7 @@ public class QtDemo extends QMainWindow {
 		return tabbedPane;
 	}
 
-	public QWidget createCell_Position(final QWidget parent) {
+	public QWidget createCellPosition(final QWidget parent) {
 		final QTabWidget tabbedPane = new QTabWidget();
 
 		// Absolute grid position
@@ -1068,7 +1143,7 @@ public class QtDemo extends QMainWindow {
 		return tabbedPane;
 	}
 
-	public QWidget createAbsolute_Position(final QWidget parent) {
+	public QWidget createAbsolutePosition(final QWidget parent) {
 		final QTabWidget tabbedPane = new QTabWidget();
 
 		// Pos tab
@@ -1143,7 +1218,7 @@ public class QtDemo extends QMainWindow {
 		super.moveEvent(event);
 	}
 
-	public QWidget createComponent_Links(final QWidget parent) {
+	public QWidget createComponentLinks(final QWidget parent) {
 		final QTabWidget tabbedPane = new QTabWidget();
 
 		final QWidget linksPanel = createTabPanel(tabbedPane, "Component Links", new MigLayout());
@@ -1294,7 +1369,7 @@ public class QtDemo extends QMainWindow {
 		return tabbedPane;
 	}
 
-	public QWidget createButton_Bars(final QWidget parent) {
+	public QWidget createButtonBars(final QWidget parent) {
 		final MigLayout lm = new MigLayout("ins 0 0 15lp 0", "[grow]", "[grow]u[baseline,nogrid]");
 
 		final QWidget mainPanel = new QWidget(parent);
@@ -1317,18 +1392,18 @@ public class QtDemo extends QMainWindow {
 		winButt = createToggleButton(mainPanel, "Windows", "wmin button");
 		macButt = createToggleButton(mainPanel, "Mac OS X", "wmin button");
 
-		winButt.clicked.connect(this, "clicked_winbutt()");
-		macButt.clicked.connect(this, "clicked_macbutt()");
+		winButt.clicked.connect(this, "clickedButtonWindows()");
+		macButt.clicked.connect(this, "clickedButtonMacOS()");
 
 		final QPushButton helpButt = createButton(mainPanel, "Help", "gap unrel,wmin button");
-		helpButt.clicked.connect(this, "clicked_help()");
+		helpButt.clicked.connect(this, "clickedButtonHelp()");
 
 		(PlatformDefaults.getPlatform() == PlatformDefaults.WINDOWS_XP ? winButt : macButt).setChecked(true);
 
 		return mainPanel;
 	}
 
-	protected void clicked_winbutt() {
+	protected void clickedButtonWindows() {
 		PlatformDefaults.setPlatform(PlatformDefaults.WINDOWS_XP);
 		formatLabel.setText("'" + PlatformDefaults.getButtonOrder() + "'");
 		winButt.setChecked(true);
@@ -1336,7 +1411,7 @@ public class QtDemo extends QMainWindow {
 		form.layout();
 	}
 
-	protected void clicked_macbutt() {
+	protected void clickedButtonMacOS() {
 		PlatformDefaults.setPlatform(PlatformDefaults.MAC_OSX);
 		formatLabel.setText("'" + PlatformDefaults.getButtonOrder() + "'");
 		macButt.setChecked(true);
@@ -1344,7 +1419,7 @@ public class QtDemo extends QMainWindow {
 		form.layout();
 	}
 
-	protected void clicked_help() {
+	protected void clickedButtonHelp() {
 		QMessageBox.information(
 				this,
 				"Help",
@@ -1389,7 +1464,7 @@ public class QtDemo extends QMainWindow {
 		return panel;
 	}
 
-	public QWidget createLayout_Showdown(final QWidget parent) {
+	public QWidget createLayoutShowdown(final QWidget parent) {
 		final QTabWidget tabbedPane = new QTabWidget(parent);
 
 		final QWidget p1 = createTabPanel(tabbedPane, "Layout Showdown (pure)", new MigLayout("", "[]15[][grow,fill]15[grow]"));
@@ -1463,7 +1538,7 @@ public class QtDemo extends QMainWindow {
 		return tabbedPane;
 	}
 
-	public QWidget createAPI_Constraints1(final QWidget parent) {
+	public QWidget createAPIConstraints1(final QWidget parent) {
 		final QTabWidget tabbedPane = new QTabWidget(parent);
 
 		final LC layC = new LC().fill().wrap();
@@ -1505,7 +1580,7 @@ public class QtDemo extends QMainWindow {
 		return tabbedPane;
 	}
 
-	public QWidget createAPI_Constraints2(final QWidget parent) {
+	public QWidget createAPIConstraints2(final QWidget parent) {
 		final QTabWidget tabbedPane = new QTabWidget(parent);
 
 		final LC layC = new LC().fill().wrap();
@@ -1554,7 +1629,7 @@ public class QtDemo extends QMainWindow {
 
 		windowMovedListeningWidget = null;
 
-		final String methodName = "create" + panels[ix][0].replace(' ', '_');
+		final String methodName = "create" + PANELS[ix][0].replace(" ", "");
 
 		// Clear layoutDisplayPanel
 		while (layoutDisplayPanelLayout.count() > 0) {
@@ -1572,7 +1647,7 @@ public class QtDemo extends QMainWindow {
 			layoutDisplayPanelLayout.addItem(new QWidgetItem(child), "grow, wmin 500");
 
 			layoutDisplayPanelLayout.invalidate();
-			descrTextArea.setText(panels[ix][1]);
+			descrTextArea.setText(PANELS[ix][1]);
 		} catch (final Exception e1) {
 			e1.printStackTrace(); // Should never happpen...
 		}
