@@ -12,6 +12,16 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.miglayout</groupId>
+			<artifactId>miglayout</artifactId>
+			<version>3.7.3.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
 
 	<profiles>
 		<profile>
@@ -22,15 +32,6 @@
 					<!-- <arch>amd64</arch> -->
 				</os>
 			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>com.miglayout</groupId>
-					<artifactId>miglayout</artifactId>
-					<version>3.7.3.1</version>
-					<type>jar</type>
-					<scope>compile</scope>
-				</dependency>
-			</dependencies>
 		</profile>
 
 		<profile>
@@ -75,13 +76,6 @@
 					<groupId>net.sf.qtjambi</groupId>
 					<artifactId>qtjambi</artifactId>
 					<version>4.6.3</version>
-				</dependency>
-				<dependency>
-					<groupId>com.miglayout</groupId>
-					<artifactId>miglayout</artifactId>
-					<version>3.7.3.1</version>
-					<type>jar</type>
-					<scope>compile</scope>
 				</dependency>
 			</dependencies>
 		</profile>
