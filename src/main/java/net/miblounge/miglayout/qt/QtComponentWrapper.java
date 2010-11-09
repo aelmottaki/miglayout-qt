@@ -242,7 +242,7 @@ public class QtComponentWrapper implements ComponentWrapper
 		QWidget result = widget;
 
 		if (widget instanceof QScrollArea) {
-			final QScrollArea area = (QScrollArea)c.widget();
+			final QScrollArea area = (QScrollArea)widget;
 			if (area.widget() != null) {
 				result = area.widget();
 			}
