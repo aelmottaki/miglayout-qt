@@ -1,18 +1,18 @@
 /*
  * Copyright (c) 2010, Michael Hengler (developer (at) hengler (dot) de),
- *                     Nikolaus Moll (developer (at) miblounge (dot) net).
+ * Nikolaus Moll (developer (at) miblounge (dot) net).
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  * * Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
+ * notice, this list of conditions and the following disclaimer.
  * * Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in the
- *   documentation and/or other materials provided with the distribution.
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
  * * Neither the name of the [QTPRJ] nor the
- *   names of its contributors may be used to endorse or promote products
- *   derived from this software without specific prior written permission.
+ * names of its contributors may be used to endorse or promote products
+ * derived from this software without specific prior written permission.
  * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -60,7 +60,7 @@ import com.trolltech.qt.gui.QWidget;
 import com.trolltech.qt.gui.QWidgetItem;
 
 public final class MigLayout extends QLayout implements Externalizable {
-	private List<QLayoutItemInterface> items = new ArrayList<QLayoutItemInterface>();
+	private final List<QLayoutItemInterface> items = new ArrayList<QLayoutItemInterface>();
 
 	// ******** Instance part ********
 
@@ -129,7 +129,7 @@ public final class MigLayout extends QLayout implements Externalizable {
 	 * @param rowConstraints The constraints for the rows in the grid. <code>null</code> will be treated as "".
 	 */
 	public MigLayout(final String layoutConstraints, final String colConstraints, final String rowConstraints) {
-		System.out.println("MigLayout: " + layoutConstraints + " / "+ colConstraints + " / " + rowConstraints);
+		System.out.println("MigLayout: " + layoutConstraints + " / " + colConstraints + " / " + rowConstraints);
 		setLayoutConstraints(layoutConstraints);
 		setColumnConstraints(colConstraints);
 		setRowConstraints(rowConstraints);
@@ -453,7 +453,7 @@ public final class MigLayout extends QLayout implements Externalizable {
 	/*
 	 * ************** QLAYOUT *********************
 	 */
-	
+
 	public void addWidget(final QWidget widget, final Object constraints) {
 		addItem(new QWidgetItem(widget), constraints);
 	}
@@ -503,10 +503,10 @@ public final class MigLayout extends QLayout implements Externalizable {
 	@Override
 	public QSize minimumSize() {
 		return calcSize(LayoutUtil.MIN);
-//		if (minimumSize == null) {
-//			minimumSize = calcSize(LayoutUtil.MIN);
-//		}
-//		return minimumSize;
+		//		if (minimumSize == null) {
+		//			minimumSize = calcSize(LayoutUtil.MIN);
+		//		}
+		//		return minimumSize;
 	}
 
 	@Override
@@ -540,7 +540,7 @@ public final class MigLayout extends QLayout implements Externalizable {
 
 		final QLayoutItemInterface result = items.get(index);
 		items.remove(index);
-		
+
 		// remove from MigLayout aswell
 		scrConstrMap.remove(result);
 		ccMap.remove(new QtComponentWrapper(result));
