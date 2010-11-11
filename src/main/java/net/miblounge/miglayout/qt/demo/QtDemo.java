@@ -235,7 +235,7 @@ public class QtDemo extends QMainWindow {
 		shell.setLayout(layout);
 
 		final QTabWidget layoutPickerTabPane = new QTabWidget(shell);
-		layout.addItem(new QWidgetItem(layoutPickerTabPane), "spany,grow");
+		layout.addItem(new QWidgetItem(layoutPickerTabPane), "spany,grow, w 130:130");
 
 		pickerList = new QListWidget();
 		pickerList.setBackgroundRole(layoutPickerTabPane.backgroundRole());
@@ -906,7 +906,7 @@ public class QtDemo extends QMainWindow {
 		final MigLayout hLM = new MigLayout("wrap", "[right][]", "");
 		final QWidget hPanel = createTabPanel(tabbedPane, "Horizontal", hLM);
 
-		final String[] sizes = new String[] {"72pt", "25.4mm", "2.54cm", "1in", "72px", "96px", "120px", "25%", "30sp"};
+		final String[] sizes = new String[] {"72pt", "25.4mm", "2.54cm", "1in", "72px", "96px", "120px", "25%", "20sp"};
 		for (int i = 0; i < sizes.length; i++) {
 			createLabel(hPanel, sizes[i], "");
 			createTextField(hPanel, "", "width " + sizes[i] + "");
@@ -929,7 +929,7 @@ public class QtDemo extends QMainWindow {
 		final MigLayout vLM = new MigLayout("wrap,flowy", "[c]", "[top][top]");
 		final QWidget vPanel = createTabPanel(tabbedPane, "Vertical", vLM);
 
-		final String[] vSizes = new String[] {"72pt", "25.4mm", "2.54cm", "1in", "72px", "96px", "120px", "25%", "30sp"};
+		final String[] vSizes = new String[] {"72pt", "25.4mm", "2.54cm", "1in", "72px", "96px", "120px", "25%", "20sp"};
 		for (int i = 0; i < sizes.length; i++) {
 			createLabel(vPanel, vSizes[i], "");
 			createTextArea(vPanel, "", "width 50!, height " + vSizes[i] + "");
