@@ -238,9 +238,7 @@ public class QtComponentWrapper implements ComponentWrapper {
 			if (area.widget() != null) {
 				result = area.widget();
 			}
-		}
-
-		if (result.layout() != null) {
+		} else if (result.layout() != null) {
 			return result.layout().sizeHint();
 		}
 
@@ -350,11 +348,16 @@ public class QtComponentWrapper implements ComponentWrapper {
 
 	@Override
 	public final void setBounds(final int x, final int y, final int width, final int height) {
-		System.out.println("Setting bounds on " + widget + " | " + width + "*" + height);
+		//System.out.println("Setting bounds on " + widget + " | " + width + "*" + height);
 
 		final QRect rect = new QRect(x, y, width, height);
 		c.setGeometry(rect);
 		widget.setGeometry(rect);
+
+		if (widget.toString().equals("Icon")) {
+			System.out.println("set fixed size " + width + "*" + height);
+			widget.setFixedSize(new QSize(width, height));
+		}
 
 		if (widget instanceof QScrollArea) {
 			final QScrollArea scrollArea = (QScrollArea) widget;
