@@ -227,7 +227,8 @@ public class QtComponentWrapper implements ComponentWrapper {
 
 	@Override
 	public final int getMinimumWidth(final int sz) {
-		return widget.minimumSize().width();
+		final int result = widget.minimumSize().width();
+		return result;
 	}
 
 	private QSize getPreferredSize(final QWidget widget) {
@@ -252,7 +253,8 @@ public class QtComponentWrapper implements ComponentWrapper {
 
 	@Override
 	public final int getPreferredWidth(final int sz) {
-		return getPreferredSize(widget).width();
+		final int result = getPreferredSize(widget).width();
+		return result;
 	}
 
 	@Override
@@ -348,16 +350,37 @@ public class QtComponentWrapper implements ComponentWrapper {
 
 	@Override
 	public final void setBounds(final int x, final int y, final int width, final int height) {
-		//System.out.println("Setting bounds on " + widget + " | " + width + "*" + height);
-
 		final QRect rect = new QRect(x, y, width, height);
+		if (c.geometry().equals(rect)) {
+			return;
+		}
+
+		// TODO: improve evil workaround
+		if ((x == 8) && (y == 8)) {
+			// 8, 8 is usually 7, 7
+			return;
+		}
+
+		//		if (widget.toString().startsWith("Problemwidget")) {
+		//			if (y < 10) {
+		//				System.out.println("setBounds " + widget + ": " + rect + " " + widget.sizeHint());
+		//			}
+		//		}
+
+		//		if (widget.toString().equals("Composite")) {
+		//			if ((width > 500) && (height > 280)) {
+		//				System.out.println("setBounds " + widget + ": " + rect + " " + widget.sizeHint());
+		//			}
+		//		}
+		//
+		//		if ((widget instanceof QLineEdit)) {
+		//			if (y < 30) {
+		//				System.out.println("setBounds " + widget + ": " + rect);
+		//			}
+		//		}
+
 		c.setGeometry(rect);
 		widget.setGeometry(rect);
-
-		if (widget.toString().equals("Icon")) {
-			System.out.println("set fixed size " + width + "*" + height);
-			widget.setFixedSize(new QSize(width, height));
-		}
 
 		if (widget instanceof QScrollArea) {
 			final QScrollArea scrollArea = (QScrollArea) widget;
@@ -455,6 +478,9 @@ public class QtComponentWrapper implements ComponentWrapper {
 		//
 		d = widget.minimumSize();
 		h += (d.width() << 20) + (d.height() << 25);
+
+		d = widget.size();
+		h += (d.width() << 30) + (d.height() << 35);
 
 		if ((widget != null) && (widget.isVisible())) {
 			h += 1324511;

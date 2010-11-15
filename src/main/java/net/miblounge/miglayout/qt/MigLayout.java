@@ -100,6 +100,8 @@ public final class MigLayout extends QLayout implements Externalizable {
 	private QSize minimumSize = null;
 	private QSize maximumSize = null;
 
+	private QRect lastRect;
+
 	/**
 	 * Constructor with no constraints.
 	 */
@@ -134,7 +136,7 @@ public final class MigLayout extends QLayout implements Externalizable {
 	 * @param rowConstraints The constraints for the rows in the grid. <code>null</code> will be treated as "".
 	 */
 	public MigLayout(final String layoutConstraints, final String colConstraints, final String rowConstraints) {
-		System.out.println("MigLayout: " + layoutConstraints + " / " + colConstraints + " / " + rowConstraints);
+		//System.out.println("MigLayout: " + layoutConstraints + " / " + colConstraints + " / " + rowConstraints);
 		setLayoutConstraints(layoutConstraints);
 		setColumnConstraints(colConstraints);
 		setRowConstraints(rowConstraints);
@@ -376,7 +378,12 @@ public final class MigLayout extends QLayout implements Externalizable {
 
 	@Override
 	public void setGeometry(final QRect rect) {
-		super.setGeometry(rect);
+		if (!rect.equals(lastRect)) {
+			super.setGeometry(rect);
+		}
+
+		lastRect = rect;
+		//System.out.println("setGeometry " + parentWidget() + ": " + parentWidget().x() + "/" + parentWidget().y() + " | " + rect);
 
 		checkCache(parentWidget());
 
@@ -397,8 +404,6 @@ public final class MigLayout extends QLayout implements Externalizable {
 			return;
 		}
 
-		final ContainerWrapper par = checkParent(parent);
-
 		// Check if the grid is valid
 		final int mc = PlatformDefaults.getModCount();
 		if (lastModCount != mc) {
@@ -417,6 +422,7 @@ public final class MigLayout extends QLayout implements Externalizable {
 		}
 
 		if (grid == null) {
+			final ContainerWrapper par = checkParent(parent);
 			grid = new Grid(par, lc, rowSpecs, colSpecs, ccMap, callbackList);
 			minimumSize = null;
 			maximumSize = null;
@@ -551,4 +557,6 @@ public final class MigLayout extends QLayout implements Externalizable {
 		ccMap.remove(new QtComponentWrapper(result));
 		return result;
 	}
+
+	// TODO: implement children()
 }
