@@ -351,46 +351,20 @@ public class QtComponentWrapper implements ComponentWrapper {
 	@Override
 	public final void setBounds(final int x, final int y, final int width, final int height) {
 		final QRect rect = new QRect(x, y, width, height);
-		if (c.geometry().equals(rect)) {
+		if (rect.equals(c.geometry())) {
 			return;
 		}
-
-		// TODO: improve evil workaround
-		if ((x == 8) && (y == 8)) {
-			// 8, 8 is usually 7, 7
-			return;
-		}
-
-		//		if (widget.toString().startsWith("Problemwidget")) {
-		//			if (y < 10) {
-		//				System.out.println("setBounds " + widget + ": " + rect + " " + widget.sizeHint());
-		//			}
-		//		}
-
-		//		if (widget.toString().equals("Composite")) {
-		//			if ((width > 500) && (height > 280)) {
-		//				System.out.println("setBounds " + widget + ": " + rect + " " + widget.sizeHint());
-		//			}
-		//		}
-		//
-		//		if ((widget instanceof QLineEdit)) {
-		//			if (y < 30) {
-		//				System.out.println("setBounds " + widget + ": " + rect);
-		//			}
-		//		}
-
-		c.setGeometry(rect);
-		widget.setGeometry(rect);
 
 		if (widget instanceof QScrollArea) {
-			final QScrollArea scrollArea = (QScrollArea) widget;
-			final QSize size = scrollArea.sizeHint();
-			scrollArea.widget().setMinimumSize(size);
+			if (!rect.equals(c.geometry())) {
+				final QScrollArea scrollArea = (QScrollArea) widget;
+				final QSize size = scrollArea.sizeHint();
+				scrollArea.widget().setMinimumSize(size);
+			}
 		}
 
-		if (widget.layout() != null) {
-			widget.layout().setGeometry(new QRect(0, 0, width, height));
-		}
+		c.setGeometry(rect);
+
 	}
 
 	@Override
