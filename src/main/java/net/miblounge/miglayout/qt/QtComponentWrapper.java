@@ -83,7 +83,7 @@ public class QtComponentWrapper implements ComponentWrapper {
 	private final QWidget widget;
 	private int compType = TYPE_UNSET;
 
-	private QSize lastHint = null;
+	private final QSize lastHint = null;
 
 	//private Boolean bl = null;
 
@@ -354,21 +354,6 @@ public class QtComponentWrapper implements ComponentWrapper {
 	public final void setBounds(final int x, final int y, final int width, final int height) {
 		final QRect rect = new QRect(x, y, width, height);
 
-		if (Math.abs(x - getX()) == 2) {
-			MigLayout.debugEnabled = true;
-			MigLayout.out("setBounds " + widget + ": " + rect + " " + widget.sizeHint());
-			MigLayout.debugEnabled = false;
-		}
-		if (Math.abs(width - getWidth()) == 2) {
-			MigLayout.debugEnabled = true;
-			MigLayout.out("setBounds " + widget + ": " + rect + " " + widget.sizeHint());
-			MigLayout.debugEnabled = false;
-		}
-
-		if (rect.equals(c.geometry())) {
-			//return;
-		}
-
 		if (widget instanceof QScrollArea) {
 			final QScrollArea scrollArea = (QScrollArea) widget;
 			final QSize size = scrollArea.sizeHint();
@@ -378,17 +363,9 @@ public class QtComponentWrapper implements ComponentWrapper {
 		c.setGeometry(rect);
 
 		if (widget.layout() != null) {
-			System.out.println("Setting layout " + width + " / " + height);
-
 			final int marginWidth = widget.contentsMargins().left() + widget.contentsMargins().right();
 			final int marginHeight = widget.contentsMargins().top() + widget.contentsMargins().bottom();
-
-			if (marginWidth + marginHeight > 0) {
-				System.out.println("MARGINS !!!!");
-			}
-
 			widget.layout().setGeometry(new QRect(0, 0, width - marginWidth, height - marginHeight));
-			System.out.println("Done Setting layout " + width + " / " + height);
 		}
 	}
 
@@ -469,13 +446,6 @@ public class QtComponentWrapper implements ComponentWrapper {
 			d = widget.layout().sizeHint();
 		} else {
 			d = widget.sizeHint();
-		}
-
-		if (!d.equals(lastHint)) {
-			MigLayout.debugEnabled = true;
-			MigLayout.out("New hint: " + d + " (" + lastHint + ") " + widget);
-			MigLayout.debugEnabled = false;
-			lastHint = d;
 		}
 
 		h += (d.width() << 10) + (d.height() << 15);

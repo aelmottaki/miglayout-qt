@@ -65,8 +65,6 @@ import com.trolltech.qt.gui.QWidget;
 import com.trolltech.qt.gui.QWidgetItem;
 
 public final class MigLayout extends QLayout implements Externalizable {
-	public static boolean debugEnabled = false;
-
 	private final List<QLayoutItemInterface> items = new ArrayList<QLayoutItemInterface>();
 
 	// ******** Instance part ********
@@ -138,7 +136,6 @@ public final class MigLayout extends QLayout implements Externalizable {
 	 * @param rowConstraints The constraints for the rows in the grid. <code>null</code> will be treated as "".
 	 */
 	public MigLayout(final String layoutConstraints, final String colConstraints, final String rowConstraints) {
-		out("MigLayout: " + layoutConstraints + " / " + colConstraints + " / " + rowConstraints);
 		setLayoutConstraints(layoutConstraints);
 		setColumnConstraints(colConstraints);
 		setRowConstraints(rowConstraints);
@@ -380,24 +377,10 @@ public final class MigLayout extends QLayout implements Externalizable {
 
 	@Override
 	public void setGeometry(final QRect rect) {
-		if (lastRect != null) {
-			if (Math.abs(rect.x() - lastRect.x()) == 2) {
-				MigLayout.debugEnabled = true;
-				out("setGeometry " + parentWidget() + ": " + parentWidget().x() + "/" + parentWidget().y() + " | " + rect);
-				MigLayout.debugEnabled = false;
-			}
-			if (Math.abs(rect.width() - lastRect.width()) == 2) {
-				MigLayout.debugEnabled = true;
-				out("setGeometry " + parentWidget() + ": " + parentWidget().x() + "/" + parentWidget().y() + " | " + rect);
-				MigLayout.debugEnabled = false;
-			}
-		}
-
 		if (!rect.equals(lastRect)) {
 			super.setGeometry(rect);
 		}
 		lastRect = rect;
-		out("setGeometry " + parentWidget() + ": " + parentWidget().x() + "/" + parentWidget().y() + " | " + rect);
 
 		checkCache(parentWidget());
 
@@ -411,12 +394,6 @@ public final class MigLayout extends QLayout implements Externalizable {
 		//			checkCache(parentWidget());
 		//			grid.layout(b, lc.getAlignX(), lc.getAlignY(), false, false);
 		//		}
-	}
-
-	public static void out(final String s) {
-		if (debugEnabled) {
-			System.out.println(s);
-		}
 	}
 
 	private void checkCache(final QWidget parent) {
