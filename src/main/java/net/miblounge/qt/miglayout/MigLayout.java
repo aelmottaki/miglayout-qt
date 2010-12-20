@@ -374,7 +374,7 @@ public final class MigLayout extends QLayout implements Externalizable {
 	@Override
 	public void setGeometry(final QRect rect) {
 		//		if (!rect.equals(lastRect)) {
-		//			super.setGeometry(rect);
+		// super.setGeometry(rect);
 		//		}
 		//		lastRect = rect;
 
@@ -460,6 +460,9 @@ public final class MigLayout extends QLayout implements Externalizable {
 		// TODO mutal exclusion
 		nextConstraints = constraints;
 		addWidget(widget);
+
+		widget.setParent(null);
+		widget.setParent(parentWidget());
 	}
 
 	@Override
