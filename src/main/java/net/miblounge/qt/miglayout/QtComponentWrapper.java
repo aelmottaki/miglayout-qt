@@ -313,9 +313,10 @@ public class QtComponentWrapper implements ComponentWrapper {
 
 		// necessary for nested layout (progress bar problem in jo-widgets)
 		if (c.layout() != null) {
-			c.layout().setGeometry(
-					new QRect(c.contentsMargins().left(), c.contentsMargins().top(), width - c.contentsMargins().right(), height
-						- c.contentsMargins().bottom()));
+			final int marginWidth = c.contentsMargins().right() + c.contentsMargins().left();
+			final int marginHeight = c.contentsMargins().bottom() + c.contentsMargins().top();
+			c.layout().setGeometry(new QRect(0, 0, width - marginWidth, height - marginHeight));
+
 		}
 	}
 
