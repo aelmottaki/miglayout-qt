@@ -35,6 +35,7 @@ package net.miblounge.miglayout.qt.demo;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.miblounge.miglayout.qt.MigLayout;
 import net.miginfocom.layout.AC;
@@ -46,6 +47,7 @@ import net.miginfocom.layout.PlatformDefaults;
 import com.trolltech.qt.core.QSize;
 import com.trolltech.qt.core.Qt;
 import com.trolltech.qt.core.Qt.Orientation;
+import com.trolltech.qt.core.Qt.WidgetAttribute;
 import com.trolltech.qt.gui.QApplication;
 import com.trolltech.qt.gui.QBrush;
 import com.trolltech.qt.gui.QCheckBox;
@@ -225,6 +227,8 @@ public class QtDemo extends QMainWindow {
 	private final MigLayout layoutDisplayPanelLayout;
 	private final QTextEdit descrTextArea;
 	private final QWidget shell;
+	private QWidget activeTab = null;
+	private final AtomicBoolean allowDispatch = new AtomicBoolean(true);
 
 	public QtDemo() {
 		setWindowTitle("MigLayout QT Demo v2.5 - Mig Layout v" + LayoutUtil.getVersion());
@@ -235,7 +239,7 @@ public class QtDemo extends QMainWindow {
 		shell.setLayout(layout);
 
 		final QTabWidget layoutPickerTabPane = new QTabWidget(shell);
-		layout.addItem(new QWidgetItem(layoutPickerTabPane), "spany,grow, w 130:130");
+		layout.addWidget(layoutPickerTabPane, "spany,grow");
 
 		pickerList = new QListWidget();
 		pickerList.setBackgroundRole(layoutPickerTabPane.backgroundRole());
@@ -245,13 +249,13 @@ public class QtDemo extends QMainWindow {
 			pickerList.addItem(PANELS[i][0]);
 		}
 
-		layoutDisplayPanel = new QWidget(shell);
 		layoutDisplayPanelLayout = new MigLayout("fill, insets 0");
+		layoutDisplayPanel = new QWidget(shell);
 		layoutDisplayPanel.setLayout(layoutDisplayPanelLayout);
 		layout.addItem(new QWidgetItem(layoutDisplayPanel));
 
 		final QTabWidget descriptionTabPane = new QTabWidget(shell);
-		layout.addItem(new QWidgetItem(descriptionTabPane), "growx,hmin 120,w 500:500");
+		layout.addWidget(descriptionTabPane, "growx,hmin 120,w 500:500");
 		descrTextArea = createTextArea(descriptionTabPane, "", "");
 		descrTextArea.setBackgroundRole(descriptionTabPane.backgroundRole());
 		descriptionTabPane.addTab(descrTextArea, "Description");
@@ -259,7 +263,7 @@ public class QtDemo extends QMainWindow {
 		pickerList.itemSelectionChanged.connect(this, "dispatchSelection()");
 
 		pickerList.selectionModel().setCurrentIndex(pickerList.model().index(SELECTED_INDEX, 0), SelectionFlag.SelectCurrent);
-		dispatchSelection();
+		//dispatchSelection();
 
 		/*
 		 * 
@@ -331,7 +335,105 @@ public class QtDemo extends QMainWindow {
 		}
 
 		QApplication.initialize(args);
+		QApplication.instance().setStyleSheet(
+				""
+					+ "QPushButton {"
+					+ "    border: 2px solid #8f8f91;"
+					+ "    border-radius: 6px;"
+					+ "    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, "
+					+ "                                      stop: 0 #f6f7fa, stop: 1 #dadbde);"
+					+ "}"
+					+ "QPushButton:pressed {"
+					+ "    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, "
+					+ "                                      stop: 0 #dadbde, stop: 1 #f6f7fa);"
+					+ "}"
+					+ "QPushButton:flat {"
+					+ "    border: none;  no border for a flat push button"
+					+ "}"
+					+ "QPushButton:default {"
+					+ "    border-color: navy;  make the default button prominent"
+					+ "}"
+					+ ""
 
+					//					+ "QComboBox {"
+					//					+ "  padding: 1px;"
+					//					+ "  border-style: solid;"
+					//					+ "  border: 2px solid gray;"
+					//					+ "  border-radius: 8px;"
+					//					+ "}"
+					+ ""
+
+					+ "QComboBox {"
+					+ "    border: 2px solid gray;"
+					+ "    border-radius: 8px;"
+					+ "    padding: 1px 19px 1px 3px;"
+					+ "    min-width: 6em;"
+					+ "}"
+					+ "QComboBox:editable {"
+					+ "    background: white;"
+					+ "}"
+					+ "QComboBox:!editable:on, QComboBox::drop-down:editable {"
+					+ "     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
+					+ "                                 stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,"
+					+ "                                 stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);"
+					+ "}"
+					+ "QComboBox:!editable:on, QComboBox::drop-down:editable:on {"
+					+ "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
+					+ "                                stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,"
+					+ "                                stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);"
+					+ "}"
+					+ "QComboBox:on {  shift the text when the popup opens"
+					+ "    padding-top: 3px;"
+					+ "    padding-left: 4px;"
+					+ "}"
+					+ "QComboBox::drop-down {"
+					+ "    subcontrol-origin: padding;"
+					+ "    subcontrol-position: top right;"
+					+ "    width: 15px;"
+					+ "    border-left-width: 2px;"
+					+ "    border-left-color: darkgray;"
+					+ "    border-left-style: solid;  just a single line "
+					+ "    border-top-right-radius: 8px;  same radius as the QComboBox"
+					+ "    border-bottom-right-radius: 8px;"
+					+ "}"
+					//					+ "QComboBox::down-arrow {"
+					//					+ "    image: url(/usr/share/icons/crystalsvg/16x16/actions/1downarrow.png);"
+					//					+ "}"
+					//					+ "QComboBox::down-arrow:on {"
+					//					+ "    top: 1px;"
+					//					+ "    left: 1px;"
+					//					+ "}"
+
+					+ "QGroupBox {"
+					+ "    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
+					+ "                                      stop: 0 #E0E0E0, stop: 1 #FFFFFF);"
+					+ "    border: 2px solid gray;"
+					+ "    border-radius: 5px;"
+					+ "    margin-top: 2ex;  leave space at the top for the title"
+					+ "}"
+					+ ""
+					+ "QGroupBox::title {"
+					+ "    subcontrol-origin: margin;"
+					+ "    subcontrol-position: top center;  position at the top center"
+					+ "    padding: 0 3px;"
+					+ "}"
+
+					+ "QProgressBar {"
+					+ "    border: 2px solid grey;"
+					+ "    border-radius: 5px;"
+					+ "}"
+
+					+ "QProgressBar::chunk {"
+					+ "    background-color: #05B8CC;"
+					+ "    width: 20px;"
+					+ "}"
+
+					+ "QLineEdit {"
+					+ "  padding: 2px;"
+					+ "	 border-style: solid;"
+					+ "  border: 2px solid gray;"
+					+ "  border-radius: 8px;"
+					+ "}");
 		final QtDemo gui = new QtDemo();
 		gui.show();
 
@@ -1264,7 +1366,7 @@ public class QtDemo extends QMainWindow {
 		boundsPanel.setPalette(plt);
 		boundsPanel.setAutoFillBackground(true);
 
-		gpLayout.addItem(new QWidgetItem(boundsPanel), "pos grp1.x grp1.y grp1.x2 grp1.y2");
+		gpLayout.addWidget(boundsPanel, "pos grp1.x grp1.y grp1.x2 grp1.y2");
 
 		createButton(gpPanel, "id grp1.b1, pos n 0.5al 50% n", null);
 		createButton(gpPanel, "id grp1.b2, pos 50% 0.5al n n", null);
@@ -1310,7 +1412,7 @@ public class QtDemo extends QMainWindow {
 		}
 		//table.setHeaderVisible(true);
 		//table.setLinesVisible(true);
-		((MigLayout) p1.layout()).addItem(new QWidgetItem(table), "grow");
+		((MigLayout) p1.layout()).addWidget(table, "grow");
 
 		final QWidget p2 = createTabPanel(tabbedPane, "Docking 2 (fill)", new MigLayout("fill", "[c]", ""));
 
@@ -1377,7 +1479,7 @@ public class QtDemo extends QMainWindow {
 		form = mainPanel;
 
 		final QTabWidget tabbedPane = new QTabWidget(mainPanel);
-		lm.addItem(new QWidgetItem(tabbedPane), "grow, wrap");
+		lm.addWidget(tabbedPane, "grow, wrap");
 
 		createButtonBarsPanel(tabbedPane, "Buttons", "help", false);
 		createButtonBarsPanel(tabbedPane, "Buttons with Help2", "help2", false);
@@ -1627,29 +1729,43 @@ public class QtDemo extends QMainWindow {
 			return;
 		}
 
-		windowMovedListeningWidget = null;
+		if (allowDispatch.getAndSet(false)) {
+			System.out.println("dispatchSelection");
 
-		final String methodName = "create" + PANELS[ix][0].replace(" ", "");
+			if (activeTab != null) {
 
-		// Clear layoutDisplayPanel
-		while (layoutDisplayPanelLayout.count() > 0) {
-			final QWidgetItem item = ((QWidgetItem) layoutDisplayPanelLayout.takeAt(0));
-			item.invalidate();
-			item.widget().dispose();
-			item.dispose();
-		}
+				final int countBefore = QApplication.allWidgets().size();
 
-		try {
-			final QWidget child = (QWidget) QtDemo.class.getMethod(methodName, new Class[] {QWidget.class}).invoke(
-					QtDemo.this,
-					new Object[] {layoutDisplayPanel});
-			//child.setLayoutData("grow, wmin 500");
-			layoutDisplayPanelLayout.addItem(new QWidgetItem(child), "grow, wmin 500");
+				layoutDisplayPanelLayout.takeWidget(activeTab);
+				//layoutDisplayPanelLayout.removeWidget(activeTab);
+				activeTab.setParent(null);
+				activeTab.close();
+				activeTab = null;
 
-			layoutDisplayPanelLayout.invalidate();
-			descrTextArea.setText(PANELS[ix][1]);
-		} catch (final Exception e1) {
-			e1.printStackTrace(); // Should never happpen...
+				final int countAfter = QApplication.allWidgets().size();
+
+				System.out.println("New Count: " + countAfter + " [" + countBefore + "]");
+				System.out.println("layoutDisplayPanelLayout Count: " + layoutDisplayPanelLayout.count());
+			}
+
+			windowMovedListeningWidget = null;
+
+			final String methodName = "create" + PANELS[ix][0].replace(" ", "");
+
+			try {
+				activeTab = (QWidget) QtDemo.class.getMethod(methodName, new Class[] {QWidget.class}).invoke(
+						QtDemo.this,
+						new Object[] {layoutDisplayPanel});
+				activeTab.setAttribute(WidgetAttribute.WA_DeleteOnClose);
+				activeTab.setParent(this);
+				layoutDisplayPanelLayout.addWidget(activeTab, "grow, wmin 500");
+				descrTextArea.setText(PANELS[ix][1]);
+			} catch (final Exception e1) {
+				e1.printStackTrace(); // Should never happpen...
+			}
+			System.out.println("  /dispatchSelection");
+
+			allowDispatch.set(true);
 		}
 	}
 
@@ -1830,7 +1946,7 @@ public class QtDemo extends QMainWindow {
 
 		final MigLayout layout = (MigLayout) parent.layout();
 		if (layout != null) {
-			layout.addItem(new QWidgetItem(list), (layoutdata != null) ? layoutdata : text);
+			layout.addWidget(list, (layoutdata != null) ? layoutdata : text);
 		}
 		return list;
 	}
@@ -1841,7 +1957,7 @@ public class QtDemo extends QMainWindow {
 
 		final MigLayout layout = (MigLayout) parent.layout();
 		if (layout != null) {
-			layout.addItem(new QWidgetItem(result), (layoutdata != null) ? layoutdata : text);
+			layout.addWidget(result, (layoutdata != null) ? layoutdata : text);
 		}
 		return result;
 	}
@@ -1855,7 +1971,7 @@ public class QtDemo extends QMainWindow {
 		panel.setLayout(panelLayout);
 		final MigLayout parentLayout = (MigLayout) (parent.layout());
 		//panel.setBackground(bg);
-		parentLayout.addItem(new QWidgetItem(panel), layout != null ? layout : text);
+		parentLayout.addWidget(panel, layout != null ? layout : text);
 		text = text.length() == 0 ? "\"\"" : text;
 
 		final QLabel label = createLabel(panel, text, "grow");
@@ -1882,7 +1998,7 @@ public class QtDemo extends QMainWindow {
 		final QLabel b = new QLabel(parent);
 		final MigLayout layout = (MigLayout) parent.layout();
 		b.setText(text);
-		layout.addItem(new QWidgetItem(b), layoutdata != null ? layoutdata : text);
+		layout.addWidget(b, layoutdata != null ? layoutdata : text);
 
 		return b;
 	}
@@ -1899,7 +2015,7 @@ public class QtDemo extends QMainWindow {
 		f.setFrameShape(QFrame.Shape.HLine);
 		f.setFrameShadow(QFrame.Shadow.Sunken);
 		final MigLayout layout = (MigLayout) panel.layout();
-		layout.addItem(new QWidgetItem(f), "gapleft rel, gaptop para, growx");
+		layout.addWidget(f, "gapleft rel, gaptop para, growx");
 	}
 
 	private QLineEdit createTextField(final QWidget parent, final String text, final Object layoutdata) {
@@ -1907,7 +2023,7 @@ public class QtDemo extends QMainWindow {
 		b.setText(text);
 		// TODO: set length
 		final MigLayout layout = (MigLayout) parent.layout();
-		layout.addItem(new QWidgetItem(b), layoutdata != null ? layoutdata : text);
+		layout.addWidget(b, layoutdata != null ? layoutdata : text);
 
 		return b;
 	}
@@ -1922,7 +2038,7 @@ public class QtDemo extends QMainWindow {
 		b.setCurrentIndex(-1); // clear the text
 
 		final MigLayout layout = (MigLayout) parent.layout();
-		layout.addItem(new QWidgetItem(b), layoutdata);
+		layout.addWidget(b, layoutdata);
 
 		return b;
 	}
@@ -1936,7 +2052,7 @@ public class QtDemo extends QMainWindow {
 		b.setText(text.length() == 0 ? "\"\"" : text);
 		// TODO: set bold ?
 		final MigLayout layout = (MigLayout) parent.layout();
-		layout.addItem(new QWidgetItem(b), layoutdata != null ? layoutdata : text);
+		layout.addWidget(b, layoutdata != null ? layoutdata : text);
 
 		//		configureActiveComponet(b);
 
@@ -1949,7 +2065,7 @@ public class QtDemo extends QMainWindow {
 		b.setText(text.length() == 0 ? "\"\"" : text);
 
 		final MigLayout layout = (MigLayout) parent.layout();
-		layout.addItem(new QWidgetItem(b), layoutdata != null ? layoutdata : text);
+		layout.addWidget(b, layoutdata != null ? layoutdata : text);
 
 		return b;
 	}
@@ -1959,7 +2075,7 @@ public class QtDemo extends QMainWindow {
 		b.setText(text);
 
 		final MigLayout layout = (MigLayout) parent.layout();
-		layout.addItem(new QWidgetItem(b), layoutdata != null ? layoutdata : text);
+		layout.addWidget(b, layoutdata != null ? layoutdata : text);
 
 		return b;
 	}

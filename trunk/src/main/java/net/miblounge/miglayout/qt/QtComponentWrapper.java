@@ -39,7 +39,6 @@ import net.miginfocom.layout.ComponentWrapper;
 import net.miginfocom.layout.ContainerWrapper;
 import net.miginfocom.layout.PlatformDefaults;
 
-import com.trolltech.qt.core.QObject;
 import com.trolltech.qt.core.QPoint;
 import com.trolltech.qt.core.QPointF;
 import com.trolltech.qt.core.QRect;
@@ -51,7 +50,6 @@ import com.trolltech.qt.gui.QCheckBox;
 import com.trolltech.qt.gui.QComboBox;
 import com.trolltech.qt.gui.QFontMetrics;
 import com.trolltech.qt.gui.QLabel;
-import com.trolltech.qt.gui.QLayoutItemInterface;
 import com.trolltech.qt.gui.QLineEdit;
 import com.trolltech.qt.gui.QListView;
 import com.trolltech.qt.gui.QPainter;
@@ -65,12 +63,12 @@ import com.trolltech.qt.gui.QTreeView;
 import com.trolltech.qt.gui.QWidget;
 
 public class QtComponentWrapper implements ComponentWrapper {
+	private static final QPoint ORIGIN = new QPoint(0, 0);
+
 	/**
 	 * Cache.
 	 */
 	private static final IdentityHashMap<QFontMetrics, QPointF> FM_MAP = new IdentityHashMap<QFontMetrics, QPointF>(4);
-
-	private static boolean maxSet = false;
 
 	private static boolean vp = true;
 
@@ -79,17 +77,14 @@ public class QtComponentWrapper implements ComponentWrapper {
 	 */
 	//private static final QColor DB_COMP_OUTLINE = new QColor(0, 0, 200);
 
-	private final QLayoutItemInterface c;
-	private final QWidget widget;
+	private final QWidget c;
 	private int compType = TYPE_UNSET;
-
-	private final QSize lastHint = null;
+	private QSize prefSize;
 
 	//private Boolean bl = null;
 
-	public QtComponentWrapper(final QLayoutItemInterface c) {
+	public QtComponentWrapper(final QWidget c) {
 		this.c = c;
-		this.widget = c.widget();
 	}
 
 	@Override
@@ -122,10 +117,10 @@ public class QtComponentWrapper implements ComponentWrapper {
 	public final float getPixelUnitFactor(final boolean isHor) {
 		switch (PlatformDefaults.getLogicalPixelBase()) {
 			case PlatformDefaults.BASE_FONT_SIZE:
-				if (widget == null) {
+				if (c == null) {
 					return 1f;
 				}
-				final QFontMetrics fm = widget.fontMetrics();
+				final QFontMetrics fm = c.fontMetrics();
 				QPointF p = FM_MAP.get(fm);
 				if (p == null) {
 					final QRect bounds = fm.boundingRect('X');
@@ -170,74 +165,52 @@ public class QtComponentWrapper implements ComponentWrapper {
 
 	@Override
 	public final int getX() {
-		if (widget == null) {
-			return 0;
-		}
-
-		return widget.x();
+		return c.x();
 	}
 
 	@Override
 	public final int getY() {
-		if (widget == null) {
-			return 0;
-		}
-
-		return widget.y();
+		return c.y();
 	}
 
 	@Override
 	public final int getHeight() {
-		if (widget == null) {
-			return 0;
-		}
-
-		return widget.height();
+		return c.height();
 	}
 
 	@Override
 	public final int getWidth() {
-		if (widget == null) {
-			return 0;
-		}
-
-		return widget.width();
+		return c.width();
 	}
 
 	@Override
 	public final int getScreenLocationX() {
-		if (widget == null) {
-			return 0;
-		}
-		final QPoint p = widget.mapToGlobal(new QPoint(0, 0));
+		final QPoint p = c.mapToGlobal(ORIGIN);
 		return p.x();
 	}
 
 	@Override
 	public final int getScreenLocationY() {
-		if (widget == null) {
-			return 0;
-		}
-		final QPoint p = widget.mapToGlobal(new QPoint(0, 0));
+		final QPoint p = c.mapToGlobal(ORIGIN);
 		return p.y();
 	}
 
 	@Override
 	public final int getMinimumHeight(final int sz) {
-		return widget.minimumSize().height();
+		return c.minimumSize().height();
 	}
 
 	@Override
 	public final int getMinimumWidth(final int sz) {
-		final int result = widget.minimumSize().width();
+		final int result = c.minimumSize().width();
 		return result;
 	}
 
-	private QSize getPreferredSize(final QWidget widget) {
-		QWidget result = widget;
+	private QSize getPreferredSize() {
+		QWidget result = c;
 
-		if (widget instanceof QScrollArea) {
-			final QScrollArea area = (QScrollArea) widget;
+		if (result instanceof QScrollArea) {
+			final QScrollArea area = (QScrollArea) result;
 			if (area.widget() != null) {
 				result = area.widget();
 			}
@@ -250,61 +223,35 @@ public class QtComponentWrapper implements ComponentWrapper {
 
 	@Override
 	public final int getPreferredHeight(final int sz) {
-		return getPreferredSize(widget).height();
+		//return getPreferredSize().height();
+		if (prefSize == null) {
+			prefSize = getPreferredSize();
+		}
+		return prefSize.height();
 	}
 
 	@Override
 	public final int getPreferredWidth(final int sz) {
-		final int result = getPreferredSize(widget).width();
-		return result;
+		//return getPreferredSize().width();
+		if (prefSize == null) {
+			prefSize = getPreferredSize();
+		}
+		return prefSize.width();
 	}
 
 	@Override
 	public final int getMaximumHeight(final int sz) {
-		if (!isMaxSet(c)) {
-			return Short.MAX_VALUE;
-		}
-
-		return widget.maximumSize().height();
+		return c.maximumSize().height();
 	}
 
 	@Override
 	public final int getMaximumWidth(final int sz) {
-		if (!isMaxSet(c)) {
-			return Short.MAX_VALUE;
-		}
-
-		return widget.maximumSize().width();
-	}
-
-	private boolean isMaxSet(final QLayoutItemInterface c) {
-		//		if (IMS_METHOD != null) {
-		//			try {
-		//				return ((Boolean) IMS_METHOD.invoke(c, (Object[]) null)).booleanValue();
-		//			} catch (final Exception e) {
-		//				IMS_METHOD = null;  // So we do not try every time.
-		//			}
-		//		}
-		return isMaxSizeSetOn1p4();
+		return c.maximumSize().width();
 	}
 
 	@Override
 	public final ContainerWrapper getParent() {
-		if (widget == null) {
-			return null;
-		}
-
-		final QObject p = widget.parent();
-		if (p instanceof QWidget) {
-			return new QtContainerWrapper((QWidget) p);
-		}
-
-		if (p instanceof MigLayout) {
-			final MigLayout layout = (MigLayout) p;
-			return new QtContainerWrapper((QWidget) layout.parent());
-		}
-
-		return null;
+		return new QtContainerWrapper(c.parentWidget());
 	}
 
 	@Override
@@ -354,27 +301,32 @@ public class QtComponentWrapper implements ComponentWrapper {
 	public final void setBounds(final int x, final int y, final int width, final int height) {
 		final QRect rect = new QRect(x, y, width, height);
 
-		if (widget instanceof QScrollArea) {
-			final QScrollArea scrollArea = (QScrollArea) widget;
+		if (c instanceof QScrollArea) {
+			final QScrollArea scrollArea = (QScrollArea) c;
 			final QSize size = scrollArea.sizeHint();
 			scrollArea.widget().setMinimumSize(size);
 		}
 
 		c.setGeometry(rect);
 
-		if (widget.layout() != null) {
-			final int marginWidth = widget.contentsMargins().left() + widget.contentsMargins().right();
-			final int marginHeight = widget.contentsMargins().top() + widget.contentsMargins().bottom();
-			widget.layout().setGeometry(new QRect(0, 0, width - marginWidth, height - marginHeight));
+		prefSize = null;
+
+		// necessary for nested layout (progress bar problem in jo-widgets)
+		if (c.layout() != null) {
+			//			c.layout().setGeometry(
+			//					new QRect(c.contentsMargins().left(), c.contentsMargins().top(), width - c.contentsMargins().right(), height
+			//						- c.contentsMargins().bottom()));
+			//System.out.println("Left: " + c.contentsMargins().left() + " Top: " + c.contentsMargins().top());
+			c.layout().setGeometry(
+					new QRect(0, 0, width - c.contentsMargins().right() - c.contentsMargins().left(), height
+						- c.contentsMargins().bottom()
+						- c.contentsMargins().top()));
 		}
 	}
 
 	@Override
 	public boolean isVisible() {
-		if (widget == null) {
-			return false;
-		}
-		return widget.isVisible();
+		return c.isVisible();
 	}
 
 	@Override
@@ -391,14 +343,6 @@ public class QtComponentWrapper implements ComponentWrapper {
 		return null;
 	}
 
-	public static boolean isMaxSizeSetOn1p4() {
-		return maxSet;
-	}
-
-	public static void setMaxSizeSetOn1p4(final boolean b) {
-		maxSet = b;
-	}
-
 	public static boolean isVisualPaddingEnabled() {
 		return vp;
 	}
@@ -409,11 +353,11 @@ public class QtComponentWrapper implements ComponentWrapper {
 
 	@Override
 	public final void paintDebugOutline() {
-		if ((widget == null) || (widget.isVisible() == false)) {
+		if ((c == null) || (c.isVisible() == false)) {
 			return;
 		}
 
-		final QPainter painter = new QPainter(widget);
+		final QPainter painter = new QPainter(c);
 		painter.setPen(PenStyle.DashLine);
 		painter.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
 		painter.end();
@@ -439,21 +383,25 @@ public class QtComponentWrapper implements ComponentWrapper {
 
 	@Override
 	public int getLayoutHashCode() {
+		if (c.nativeId() == 0) {
+			return 0;
+		}
+
 		int h = 0;
 		QSize d = null;
 
-		if (widget.layout() != null) {
-			d = widget.layout().sizeHint();
+		if (c.layout() != null) {
+			d = c.layout().sizeHint();
 		} else {
-			d = widget.sizeHint();
+			d = c.sizeHint();
 		}
 
 		h += (d.width() << 10) + (d.height() << 15);
-
-		d = widget.size();
+		//
+		d = c.size();
 		h += (d.width() << 30) + (d.height() << 35);
 
-		if ((widget != null) && (widget.isVisible())) {
+		if ((c != null) && (c.isVisible())) {
 			h += 1324511;
 		}
 
@@ -470,7 +418,7 @@ public class QtComponentWrapper implements ComponentWrapper {
 	}
 
 	private int checkType(final boolean disregardScrollPane) {
-		Object item = this.c.widget();
+		Object item = c;
 
 		if (disregardScrollPane) {
 			if (item instanceof QScrollArea) {

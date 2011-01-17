@@ -56,16 +56,17 @@ import net.miginfocom.layout.LayoutCallback;
 import net.miginfocom.layout.LayoutUtil;
 import net.miginfocom.layout.PlatformDefaults;
 
-import com.trolltech.qt.QtJambiObject;
 import com.trolltech.qt.core.QRect;
 import com.trolltech.qt.core.QSize;
 import com.trolltech.qt.gui.QLayout;
 import com.trolltech.qt.gui.QLayoutItemInterface;
 import com.trolltech.qt.gui.QWidget;
-import com.trolltech.qt.gui.QWidgetItem;
 
 public final class MigLayout extends QLayout implements Externalizable {
+	private Object nextConstraints = null;
+
 	private final List<QLayoutItemInterface> items = new ArrayList<QLayoutItemInterface>();
+	private final Map<QWidget, QLayoutItemInterface> itemMap = new HashMap<QWidget, QLayoutItemInterface>();
 
 	// ******** Instance part ********
 
@@ -96,11 +97,6 @@ public final class MigLayout extends QLayout implements Externalizable {
 	private transient int lastHash = -1;
 
 	private transient ArrayList<LayoutCallback> callbackList = null;
-
-	private QSize minimumSize = null;
-	private QSize maximumSize = null;
-
-	private QRect lastRect;
 
 	/**
 	 * Constructor with no constraints.
@@ -317,7 +313,7 @@ public final class MigLayout extends QLayout implements Externalizable {
 			throw new IllegalArgumentException("Component must already be added to parent!");
 		}
 
-		final ComponentWrapper cw = new QtComponentWrapper(comp);
+		final ComponentWrapper cw = new QtComponentWrapper(comp.widget());
 
 		if (constr == null || constr instanceof String) {
 			final String cStr = ConstraintParser.prepare((String) constr);
@@ -377,14 +373,16 @@ public final class MigLayout extends QLayout implements Externalizable {
 
 	@Override
 	public void setGeometry(final QRect rect) {
-		if (!rect.equals(lastRect)) {
-			super.setGeometry(rect);
-		}
-		lastRect = rect;
+		//		if (!rect.equals(lastRect)) {
+		//			super.setGeometry(rect);
+		//		}
+		//		lastRect = rect;
 
 		checkCache(parentWidget());
 
-		final int[] b = new int[] {rect.x(), rect.y(), rect.width(), rect.height()};
+		final int[] b = new int[] {
+				rect.x() + parentWidget().contentsMargins().left(), rect.y() + parentWidget().contentsMargins().top(),
+				rect.width(), rect.height()};
 
 		@SuppressWarnings("unused")
 		final boolean layoutAgain = grid.layout(b, lc.getAlignX(), lc.getAlignY(), false, true);
@@ -410,7 +408,7 @@ public final class MigLayout extends QLayout implements Externalizable {
 
 		int hash = parent.size().hashCode();
 		for (final Iterator<ComponentWrapper> it = ccMap.keySet().iterator(); it.hasNext();) {
-			hash += it.next().getLayoutHashCode();
+			hash = 17 * hash + it.next().getLayoutHashCode();
 		}
 
 		if (hash != lastHash) {
@@ -421,8 +419,6 @@ public final class MigLayout extends QLayout implements Externalizable {
 		if (grid == null) {
 			final ContainerWrapper par = checkParent(parent);
 			grid = new Grid(par, lc, rowSpecs, colSpecs, ccMap, callbackList);
-			minimumSize = null;
-			maximumSize = null;
 		}
 	}
 
@@ -463,22 +459,18 @@ public final class MigLayout extends QLayout implements Externalizable {
 	 */
 
 	public void addWidget(final QWidget widget, final Object constraints) {
-		addItem(new QWidgetItem(widget), constraints);
-	}
-
-	public void addItem(final QLayoutItemInterface item, final Object constraints) {
-		minimumSize = null;
-		item.widget().setParent(this.parentWidget());
-
-		items.add(item);
-		setComponentConstraintsImpl(item, constraints, true);
-		//item.widget().show();
+		// TODO mutal exclusion
+		nextConstraints = constraints;
+		addWidget(widget);
 	}
 
 	@Override
 	public void addItem(final QLayoutItemInterface item) {
-		minimumSize = null;
-		addItem(item, null);
+		itemMap.put(item.widget(), item);
+
+		setComponentConstraintsImpl(item, nextConstraints, true);
+		nextConstraints = null;
+		items.add(item);
 	}
 
 	@Override
@@ -505,39 +497,23 @@ public final class MigLayout extends QLayout implements Externalizable {
 		final int w = LayoutUtil.getSizeSafe(grid != null ? grid.getWidth() : null, type) + marginWidth;
 		final int h = LayoutUtil.getSizeSafe(grid != null ? grid.getHeight() : null, type) + marginHeight;
 
+		//return new QSize(w, h);
 		return new QSize(w, h);
 	}
 
 	@Override
 	public QSize minimumSize() {
 		return calcSize(LayoutUtil.MIN);
-		//		if (minimumSize == null) {
-		//			minimumSize = calcSize(LayoutUtil.MIN);
-		//		}
-		//		return minimumSize;
 	}
 
 	@Override
 	public QSize maximumSize() {
-		if (maximumSize == null) {
-			maximumSize = calcSize(LayoutUtil.MAX);
-		}
-		return maximumSize;
+		return calcSize(LayoutUtil.MAX);
 	}
 
 	@Override
 	public QSize sizeHint() {
 		return calcSize(LayoutUtil.PREF);
-	}
-
-	public void clear() {
-		while (items.size() > 0) {
-			final QtJambiObject obj = (QtJambiObject) takeAt(0);
-			if (obj instanceof QWidgetItem) {
-				((QWidgetItem) obj).widget().dispose();
-			}
-			obj.dispose();
-		}
 	}
 
 	@Override
@@ -549,11 +525,45 @@ public final class MigLayout extends QLayout implements Externalizable {
 		final QLayoutItemInterface result = items.get(index);
 		items.remove(index);
 
-		// remove from MigLayout aswell
+		// remove from MigLayout as well
 		scrConstrMap.remove(result);
-		ccMap.remove(new QtComponentWrapper(result));
+		ccMap.remove(result);
+
 		return result;
 	}
 
-	// TODO: implement children()
+	public QWidget takeWidget(final QWidget widget) {
+		final QLayoutItemInterface item = itemMap.get(widget);
+		if (item == null) {
+			return null;
+		}
+
+		itemMap.remove(widget);
+
+		items.remove(item);
+		scrConstrMap.remove(item);
+		ccMap.remove(item);
+
+		return widget;
+	}
+
+	public void setComponentConstraints(final QWidget uiReference, final Object constraints) {
+		for (final QLayoutItemInterface item : scrConstrMap.keySet()) {
+			if (item.widget() == uiReference) {
+				setComponentConstraintsImpl(item, constraints, true);
+				break;
+			}
+		}
+	}
+
+	public Object getComponentConstraints(final QWidget uiReference) {
+		for (final QLayoutItemInterface item : scrConstrMap.keySet()) {
+			if (item.widget() == uiReference) {
+				return scrConstrMap.get(item);
+			}
+		}
+
+		return null;
+	}
+
 }
