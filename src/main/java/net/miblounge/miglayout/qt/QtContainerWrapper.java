@@ -33,47 +33,44 @@
  */
 package net.miblounge.miglayout.qt;
 
+import java.util.List;
+import java.util.Vector;
+
 import net.miginfocom.layout.ComponentWrapper;
 import net.miginfocom.layout.ContainerWrapper;
 
+import com.trolltech.qt.core.QObject;
 import com.trolltech.qt.core.Qt;
-import com.trolltech.qt.gui.QLayoutItemInterface;
 import com.trolltech.qt.gui.QWidget;
-import com.trolltech.qt.gui.QWidgetItem;
 
 public final class QtContainerWrapper extends QtComponentWrapper implements ContainerWrapper {
 	public QtContainerWrapper(final QWidget c) {
-		super(new QWidgetItem(c));
+		super(c);
 	}
 
 	@Override
 	public ComponentWrapper[] getComponents() {
 		final QWidget widget = (QWidget) getComponent();
-		final Object o = widget.children().get(0);
-
-		if (o instanceof MigLayout) {
-			final MigLayout layout = (MigLayout) o;
-
-			final ComponentWrapper[] cws = new ComponentWrapper[layout.count()];
-
-			for (int i = 0; i < layout.count(); i++) {
-				final QLayoutItemInterface item = layout.itemAt(i);
-				cws[i] = new QtComponentWrapper(item);
+		final List<QtComponentWrapper> wrappers = new Vector<QtComponentWrapper>();
+		for (final QObject child : widget.children()) {
+			if (child.isWidgetType()) {
+				wrappers.add(new QtComponentWrapper((QWidget) child));
 			}
-			return cws;
-		} else {
-			return new ComponentWrapper[0];
 		}
+
+		final ComponentWrapper[] result = new ComponentWrapper[wrappers.size()];
+		int nr = 0;
+		for (final QtComponentWrapper wrapper : wrappers) {
+			result[nr] = wrapper;
+			nr++;
+		}
+
+		return result;
 	}
 
 	@Override
 	public int getComponentCount() {
 		return ((QWidget) getComponent()).children().size();
-	}
-
-	@Override
-	public Object getComponent() {
-		return ((QLayoutItemInterface) super.getComponent()).widget();
 	}
 
 	@Override
