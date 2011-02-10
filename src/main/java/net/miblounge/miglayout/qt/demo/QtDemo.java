@@ -227,7 +227,7 @@ public class QtDemo extends QMainWindow {
 	private final MigLayout layoutDisplayPanelLayout;
 	private final QTextEdit descrTextArea;
 	private final QWidget shell;
-	private QWidget activeTab = null;
+	private QTabWidget activeTab = null;
 	private final AtomicBoolean allowDispatch = new AtomicBoolean(true);
 
 	public QtDemo() {
@@ -335,119 +335,123 @@ public class QtDemo extends QMainWindow {
 		}
 
 		QApplication.initialize(args);
-		QApplication.instance().setStyleSheet(
-				""
-					+ "QPushButton {"
-					+ "    border: 2px solid #8f8f91;"
-					+ "    border-radius: 6px;"
-					+ "    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, "
-					+ "                                      stop: 0 #f6f7fa, stop: 1 #dadbde);"
-					+ "}"
-					+ "QPushButton:pressed {"
-					+ "    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, "
-					+ "                                      stop: 0 #dadbde, stop: 1 #f6f7fa);"
-					+ "}"
-					+ "QPushButton:flat {"
-					+ "    border: none;  no border for a flat push button"
-					+ "}"
-					+ "QPushButton:default {"
-					+ "    border-color: navy;  make the default button prominent"
-					+ "}"
-					+ ""
-
-					//					+ "QComboBox {"
-					//					+ "  padding: 1px;"
-					//					+ "  border-style: solid;"
-					//					+ "  border: 2px solid gray;"
-					//					+ "  border-radius: 8px;"
-					//					+ "}"
-					+ ""
-
-					+ "QComboBox {"
-					+ "    border: 2px solid gray;"
-					+ "    border-radius: 8px;"
-					+ "    padding: 1px 19px 1px 3px;"
-					+ "    min-width: 6em;"
-					+ "}"
-					+ "QComboBox:editable {"
-					+ "    background: white;"
-					+ "}"
-					+ "QComboBox:!editable:on, QComboBox::drop-down:editable {"
-					+ "     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-					+ "                                 stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,"
-					+ "                                 stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);"
-					+ "}"
-					+ "QComboBox:!editable:on, QComboBox::drop-down:editable:on {"
-					+ "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-					+ "                                stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,"
-					+ "                                stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);"
-					+ "}"
-					+ "QComboBox:on {  shift the text when the popup opens"
-					+ "    padding-top: 3px;"
-					+ "    padding-left: 4px;"
-					+ "}"
-					+ "QComboBox::drop-down {"
-					+ "    subcontrol-origin: padding;"
-					+ "    subcontrol-position: top right;"
-					+ "    width: 15px;"
-					+ "    border-left-width: 2px;"
-					+ "    border-left-color: darkgray;"
-					+ "    border-left-style: solid;  just a single line "
-					+ "    border-top-right-radius: 8px;  same radius as the QComboBox"
-					+ "    border-bottom-right-radius: 8px;"
-					+ "}"
-					//					+ "QComboBox::down-arrow {"
-					//					+ "    image: url(/usr/share/icons/crystalsvg/16x16/actions/1downarrow.png);"
-					//					+ "}"
-					//					+ "QComboBox::down-arrow:on {"
-					//					+ "    top: 1px;"
-					//					+ "    left: 1px;"
-					//					+ "}"
-
-					+ "QGroupBox {"
-					+ "    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-					+ "                                      stop: 0 #E0E0E0, stop: 1 #FFFFFF);"
-					+ "    border: 2px solid gray;"
-					+ "    border-radius: 5px;"
-					+ "    margin-top: 2ex;  leave space at the top for the title"
-					+ "}"
-					+ ""
-					+ "QGroupBox::title {"
-					+ "    subcontrol-origin: margin;"
-					+ "    subcontrol-position: top center;  position at the top center"
-					+ "    padding: 0 3px;"
-					+ "}"
-
-					+ "QProgressBar {"
-					+ "    border: 2px solid grey;"
-					+ "    border-radius: 5px;"
-					+ "}"
-
-					+ "QProgressBar::chunk {"
-					+ "    background-color: #05B8CC;"
-					+ "    width: 20px;"
-					+ "}"
-
-					+ "QLineEdit {"
-					+ "  padding: 2px;"
-					+ "	 border-style: solid;"
-					+ "  border: 2px solid gray;"
-					+ "  border-radius: 8px;"
-					+ "}");
+		//		QApplication.instance().setStyleSheet(
+		//				""
+		//					+ "QPushButton {"
+		//					+ "    border: 2px solid #8f8f91;"
+		//					+ "    border-radius: 6px;"
+		//					+ "    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, "
+		//					+ "                                      stop: 0 #f6f7fa, stop: 1 #dadbde);"
+		//					+ "}"
+		//					+ "QPushButton:pressed {"
+		//					+ "    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, "
+		//					+ "                                      stop: 0 #dadbde, stop: 1 #f6f7fa);"
+		//					+ "}"
+		//					+ "QPushButton:flat {"
+		//					+ "    border: none;  no border for a flat push button"
+		//					+ "}"
+		//					+ "QPushButton:default {"
+		//					+ "    border-color: navy;  make the default button prominent"
+		//					+ "}"
+		//					+ ""
+		//
+		//					//					+ "QComboBox {"
+		//					//					+ "  padding: 1px;"
+		//					//					+ "  border-style: solid;"
+		//					//					+ "  border: 2px solid gray;"
+		//					//					+ "  border-radius: 8px;"
+		//					//					+ "}"
+		//					+ ""
+		//
+		//					+ "QComboBox {"
+		//					+ "    border: 2px solid gray;"
+		//					+ "    border-radius: 8px;"
+		//					+ "    padding: 1px 19px 1px 3px;"
+		//					+ "    min-width: 6em;"
+		//					+ "}"
+		//					+ "QComboBox:editable {"
+		//					+ "    background: white;"
+		//					+ "}"
+		//					+ "QComboBox:!editable:on, QComboBox::drop-down:editable {"
+		//					+ "     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
+		//					+ "                                 stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,"
+		//					+ "                                 stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);"
+		//					+ "}"
+		//					+ "QComboBox:!editable:on, QComboBox::drop-down:editable:on {"
+		//					+ "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
+		//					+ "                                stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,"
+		//					+ "                                stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);"
+		//					+ "}"
+		//					+ "QComboBox:on {  shift the text when the popup opens"
+		//					+ "    padding-top: 3px;"
+		//					+ "    padding-left: 4px;"
+		//					+ "}"
+		//					+ "QComboBox::drop-down {"
+		//					+ "    subcontrol-origin: padding;"
+		//					+ "    subcontrol-position: top right;"
+		//					+ "    width: 15px;"
+		//					+ "    border-left-width: 2px;"
+		//					+ "    border-left-color: darkgray;"
+		//					+ "    border-left-style: solid;  just a single line "
+		//					+ "    border-top-right-radius: 8px;  same radius as the QComboBox"
+		//					+ "    border-bottom-right-radius: 8px;"
+		//					+ "}"
+		//					//					+ "QComboBox::down-arrow {"
+		//					//					+ "    image: url(/usr/share/icons/crystalsvg/16x16/actions/1downarrow.png);"
+		//					//					+ "}"
+		//					//					+ "QComboBox::down-arrow:on {"
+		//					//					+ "    top: 1px;"
+		//					//					+ "    left: 1px;"
+		//					//					+ "}"
+		//
+		//					+ "QGroupBox {"
+		//					+ "    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
+		//					+ "                                      stop: 0 #E0E0E0, stop: 1 #FFFFFF);"
+		//					+ "    border: 2px solid gray;"
+		//					+ "    border-radius: 5px;"
+		//					+ "    margin-top: 2ex;  leave space at the top for the title"
+		//					+ "}"
+		//					+ ""
+		//					+ "QGroupBox::title {"
+		//					+ "    subcontrol-origin: margin;"
+		//					+ "    subcontrol-position: top center;  position at the top center"
+		//					+ "    padding: 0 3px;"
+		//					+ "}"
+		//
+		//					+ "QProgressBar {"
+		//					+ "    border: 2px solid grey;"
+		//					+ "    border-radius: 5px;"
+		//					+ "}"
+		//
+		//					+ "QProgressBar::chunk {"
+		//					+ "    background-color: #05B8CC;"
+		//					+ "    width: 20px;"
+		//					+ "}"
+		//
+		//					+ "QLineEdit {"
+		//					+ "  padding: 2px;"
+		//					+ "	 border-style: solid;"
+		//					+ "  border: 2px solid gray;"
+		//					+ "  border-radius: 8px;"
+		//					+ "}");
 		final QtDemo gui = new QtDemo();
 		gui.show();
 
 		QApplication.exec();
 	}
 
-	public QWidget createWelcome(final QWidget parent) {
+	protected void tabCloseRequested(final int index) {
+		activeTab.removeTab(index);
+	}
 
-		final QTabWidget tabbedPane = new QTabWidget(parent);
+	public QTabWidget createWelcome(final QWidget parent) {
 
-		final QWidget panel = new QWidget(tabbedPane);
+		final QTabWidget result = createTabWidget(parent);
+
+		final QWidget panel = new QWidget(result);
 		final MigLayout layout = new MigLayout("ins 20, fill");
 		panel.setLayout(layout);
-		tabbedPane.addTab(panel, "Welcome");
+		result.addTab(panel, "Welcome");
 
 		final String s = "MigLayout's main purpose is to make layouts for SWT and Swing, and possibly other frameworks, much more powerful and a lot easier to create, especially for manual coding.\n\n"
 			+ "The motto is: \"MigLayout makes complex layouts easy and normal layouts one-liners.\"\n\n"
@@ -465,14 +469,14 @@ public class QtDemo extends QMainWindow {
 		//textArea.setBackground(panel.getBackground());
 		//textArea.setBackgroundMode(SWT.INHERIT_NONE);
 
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createQuickStart(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget(parent);
+	public QTabWidget createQuickStart(final QWidget parent) {
+		final QTabWidget result = createTabWidget(parent);
 
 		final MigLayout lm = new MigLayout("wrap", "[right][fill,sizegroup]unrel[right][fill,sizegroup]", "");
-		final QWidget panel = createTabPanel(tabbedPane, "Quick Start", lm);
+		final QWidget panel = createTabPanel(result, "Quick Start", lm);
 
 		addSeparator(panel, "General");
 		createLabel(panel, "Company", "gap indent");
@@ -490,18 +494,18 @@ public class QtDemo extends QMainWindow {
 		createLabel(panel, "D/mm", "gap indent");
 		createTextField(panel, "", "wmin 130");
 
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createPlain(final QWidget parent) {
+	public QTabWidget createPlain(final QWidget parent) {
 		return createPlainImpl(parent, false);
 	}
 
-	private QWidget createPlainImpl(final QWidget parent, final boolean debug) {
-		final QTabWidget tabbedPane = new QTabWidget(parent);
+	private QTabWidget createPlainImpl(final QWidget parent, final boolean debug) {
+		final QTabWidget result = createTabWidget(parent);
 		final MigLayout lm = new MigLayout((debug && benchRuns == 0 ? "debug" : ""), "[r][100lp, fill][60lp][95lp, fill]", "");
 
-		final QWidget panel = createTabPanel(tabbedPane, "Plain", lm);
+		final QWidget panel = createTabPanel(result, "Plain", lm);
 
 		addSeparator(panel, "Manufacturer");
 		createLabel(panel, "Company", "");
@@ -536,17 +540,17 @@ public class QtDemo extends QMainWindow {
 					"newline,ax left,span,gaptop 40");
 		}
 
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createAlignments(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget(parent);
+	public QTabWidget createAlignments(final QWidget parent) {
+		final QTabWidget result = createTabWidget(parent);
 
 		// Horizontal tab
 
 		final MigLayout horLM = new MigLayout("wrap", "[label]15[left]15[center]15[right]15[fill]15[]", "[]15[]");
 
-		final QWidget horTab = createTabPanel(tabbedPane, "Horizontal", horLM);
+		final QWidget horTab = createTabPanel(result, "Horizontal", horLM);
 
 		final String[] horLabels = new String[] {"[label]", "[left]", "[center]", "[right]", "[fill]", "[] (Default)"};
 		final String[] horNames = new String[] {"First Name", "Phone Number", "Facsmile", "Email", "Address", "Other"};
@@ -569,7 +573,7 @@ public class QtDemo extends QMainWindow {
 			"wrap,flowy",
 			"[]unrel[]rel[]",
 			"[top]15[center]15[bottom]15[fill]15[fill,baseline]15[baseline]15[]");
-		final QWidget verTab = createTabPanel(tabbedPane, "Vertical", verLM);
+		final QWidget verTab = createTabPanel(result, "Vertical", verLM);
 
 		final String[] verLabels = new String[] {
 				"[top]", "[center]", "[bottom]", "[fill]", "[fill,baseline]", "[baseline]", "[] (Default)"};
@@ -598,15 +602,15 @@ public class QtDemo extends QMainWindow {
 			createTextArea(verTab, "Scrolling Text\nwith two lines", "");
 		}
 
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createCellAlignments(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget(parent);
+	public QTabWidget createCellAlignments(final QWidget parent) {
+		final QTabWidget result = createTabWidget(parent);
 
 		// Horizontal
 		final MigLayout hLM = new MigLayout("wrap", "[grow,left][grow,center][grow,right][grow,fill,center]", "[]unrel[][]");
-		final QWidget hPanel = createTabPanel(tabbedPane, "Horizontal", hLM);
+		final QWidget hPanel = createTabPanel(result, "Horizontal", hLM);
 
 		final String[] sizes = new String[] {"", "growx", "growx 0", "left", "center", "right", "leading", "trailing"};
 		createLabel(hPanel, "[left]", "c");
@@ -626,7 +630,7 @@ public class QtDemo extends QMainWindow {
 			"wrap,flowy",
 			"[right][]",
 			"[grow,top][grow,center][grow,bottom][grow,fill,bottom][grow,fill,baseline]");
-		final QWidget vPanel = createTabPanel(tabbedPane, "Vertical", vLM);
+		final QWidget vPanel = createTabPanel(result, "Vertical", vLM);
 
 		final String[] vSizes = new String[] {"", "growy", "growy 0", "top", "center", "bottom"};
 		createLabel(vPanel, "[top]", "center");
@@ -642,15 +646,15 @@ public class QtDemo extends QMainWindow {
 			}
 		}
 
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createBasicSizes(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget(parent);
+	public QTabWidget createBasicSizes(final QWidget parent) {
+		final QTabWidget result = createTabWidget(parent);
 
 		// Horizontal
 		final MigLayout horLM = new MigLayout("", "[]15[75px]25[min]25[]", "[]15");
-		final QWidget horTab = createTabPanel(tabbedPane, "Horizontal - Column size set", horLM);
+		final QWidget horTab = createTabPanel(result, "Horizontal - Column size set", horLM);
 
 		// Horizontal tab
 		createLabel(horTab, "75px", "skip");
@@ -664,7 +668,7 @@ public class QtDemo extends QMainWindow {
 
 		// Vertical tab 1
 		final MigLayout verLM = new MigLayout("flowy,wrap", "[]15[]", "[]15[c,45:45]15[c,min]15[c,pref]");
-		final QWidget verTab = createTabPanel(tabbedPane, "Vertical - Row sized", verLM);
+		final QWidget verTab = createTabPanel(result, "Vertical - Row sized", verLM);
 
 		createLabel(verTab, "45px", "skip");
 		createLabel(verTab, "Min", "");
@@ -677,7 +681,7 @@ public class QtDemo extends QMainWindow {
 
 		// Componentsized/Baseline 2
 		final MigLayout verLM2 = new MigLayout("flowy,wrap", "[]15[]", "[]15[baseline]15[baseline]15[baseline]");
-		final QWidget verTab2 = createTabPanel(tabbedPane, "Vertical - Component sized + Baseline", verLM2);
+		final QWidget verTab2 = createTabPanel(result, "Vertical - Component sized + Baseline", verLM2);
 
 		createLabel(verTab2, "45px", "skip");
 		createLabel(verTab2, "Min", "");
@@ -688,15 +692,15 @@ public class QtDemo extends QMainWindow {
 		createTextArea(verTab2, "", "height min");
 		createTextArea(verTab2, "", "height pref");
 
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createGrowing(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget(parent);
+	public QTabWidget createGrowing(final QWidget parent) {
+		final QTabWidget result = createTabWidget(parent);
 
 		// All tab
 		final MigLayout allLM = new MigLayout("", "[pref!][grow,fill]", "[]15[]");
-		final QWidget allTab = createTabPanel(tabbedPane, "All", allLM);
+		final QWidget allTab = createTabPanel(result, "All", allLM);
 
 		createLabel(allTab, "Fixed", "");
 		createLabel(allTab, "Gets all extra space", "wrap");
@@ -705,7 +709,7 @@ public class QtDemo extends QMainWindow {
 
 		// Half tab
 		final MigLayout halfLM = new MigLayout("", "[pref!][grow,fill]", "[]15[]");
-		final QWidget halfTab = createTabPanel(tabbedPane, "Half", halfLM);
+		final QWidget halfTab = createTabPanel(result, "Half", halfLM);
 
 		createLabel(halfTab, "Fixed", "");
 		createLabel(halfTab, "Gets half of extra space", "");
@@ -716,7 +720,7 @@ public class QtDemo extends QMainWindow {
 
 		// Percent 1 tab
 		final MigLayout p1LM = new MigLayout("", "[pref!][0:0,grow 25,fill][0:0,grow 75,fill]", "[]15[]");
-		final QWidget p1Tab = createTabPanel(tabbedPane, "Percent 1", p1LM);
+		final QWidget p1Tab = createTabPanel(result, "Percent 1", p1LM);
 
 		createLabel(p1Tab, "Fixed", "");
 		createLabel(p1Tab, "Gets 25% of extra space", "");
@@ -727,7 +731,7 @@ public class QtDemo extends QMainWindow {
 
 		// Percent 2 tab
 		final MigLayout p2LM = new MigLayout("", "[0:0,grow 33,fill][0:0,grow 67,fill]", "[]15[]");
-		final QWidget p2Tab = createTabPanel(tabbedPane, "Percent 2", p2LM);
+		final QWidget p2Tab = createTabPanel(result, "Percent 2", p2LM);
 
 		createLabel(p2Tab, "Gets 33% of extra space", "");
 		createLabel(p2Tab, "Gets 67% of extra space", "wrap");
@@ -736,7 +740,7 @@ public class QtDemo extends QMainWindow {
 
 		// Vertical 1 tab
 		final MigLayout v1LM = new MigLayout("flowy", "[]15[]", "[][c,pref!][c,grow 25,fill][c,grow 75,fill]");
-		final QWidget v1Tab = createTabPanel(tabbedPane, "Vertical 1", v1LM);
+		final QWidget v1Tab = createTabPanel(result, "Vertical 1", v1LM);
 
 		createLabel(v1Tab, "Fixed", "skip");
 		createLabel(v1Tab, "Gets 25% of extra space", "");
@@ -748,7 +752,7 @@ public class QtDemo extends QMainWindow {
 
 		// Vertical 2 tab
 		final MigLayout v2LM = new MigLayout("flowy", "[]15[]", "[][c,grow 33,fill][c,grow 67,fill]");
-		final QWidget v2Tab = createTabPanel(tabbedPane, "Vertical 2", v2LM);
+		final QWidget v2Tab = createTabPanel(result, "Vertical 2", v2LM);
 
 		createLabel(v2Tab, "Gets 33% of extra space", "skip");
 		createLabel(v2Tab, "Gets 67% of extra space", "wrap");
@@ -756,15 +760,15 @@ public class QtDemo extends QMainWindow {
 		createTextArea(v2Tab, "", "hmin 4*13");
 		createTextArea(v2Tab, "", "hmin 4*13");
 
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createGrowShrink(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget(parent);
+	public QTabWidget createGrowShrink(final QWidget parent) {
+		final QTabWidget result = createTabWidget(parent);
 
 		// shrink tab
 		final QGridLayout shrinkPanelLayout = new QGridLayout();
-		final QWidget shrinkPanel = createTabPanel(tabbedPane, "Shrink", shrinkPanelLayout);
+		final QWidget shrinkPanel = createTabPanel(result, "Shrink", shrinkPanelLayout);
 
 		final QSplitter sSplitPane = new QSplitter(shrinkPanel);
 		sSplitPane.setOrientation(Orientation.Horizontal);
@@ -805,7 +809,7 @@ public class QtDemo extends QMainWindow {
 
 		// Grow tab
 		final QGridLayout growPanelLayout = new QGridLayout();
-		final QWidget growPanel = createTabPanel(tabbedPane, "Grow", growPanelLayout);
+		final QWidget growPanel = createTabPanel(result, "Grow", growPanelLayout);
 
 		final QSplitter gSplitPane = new QSplitter(growPanel);
 		gSplitPane.setOrientation(Orientation.Horizontal);
@@ -839,15 +843,15 @@ public class QtDemo extends QMainWindow {
 				"");
 		gDescText.setFrameShape(Shape.NoFrame);
 
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createSpan(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget(parent);
+	public QTabWidget createSpan(final QWidget parent) {
+		final QTabWidget result = createTabWidget(parent);
 
 		// Horizontal span
 		final MigLayout colLM = new MigLayout("", "[fill][25%,fill][105lp!,fill][150px!,fill]", "[]15[][]");
-		final QWidget colPanel = createTabPanel(tabbedPane, "Column Span/Split", colLM);
+		final QWidget colPanel = createTabPanel(result, "Column Span/Split", colLM);
 
 		createTextField(colPanel, "Col1 [ ]", "");
 		createTextField(colPanel, "Col2 [25%]", "");
@@ -870,7 +874,7 @@ public class QtDemo extends QMainWindow {
 
 		// Vertical span
 		final MigLayout rowLM = new MigLayout("wrap", "[225lp]para[225lp]", "[]3[]unrel[]3[]unrel[]3[]");
-		final QWidget rowPanel = createTabPanel(tabbedPane, "Row Span", rowLM);
+		final QWidget rowPanel = createTabPanel(result, "Row Span", rowLM);
 
 		createLabel(rowPanel, "Name", "");
 		createLabel(rowPanel, "Notes", "");
@@ -881,46 +885,46 @@ public class QtDemo extends QMainWindow {
 		createLabel(rowPanel, "Fax", "");
 		createTextField(rowPanel, "growx", null);
 
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createFlowDirection(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget(parent);
+	public QTabWidget createFlowDirection(final QWidget parent) {
+		final QTabWidget result = createTabWidget(parent);
 
-		createFlowPanel(tabbedPane, "Layout: flowx, Cell: flowx", "", "flowx");
-		createFlowPanel(tabbedPane, "Layout: flowx, Cell: flowy", "", "flowy");
-		createFlowPanel(tabbedPane, "Layout: flowy, Cell: flowx", "flowy", "flowx");
-		createFlowPanel(tabbedPane, "Layout: flowy, Cell: flowy", "flowy", "flowy");
+		createFlowPanel(result, "Layout: flowx, Cell: flowx", "", "flowx");
+		createFlowPanel(result, "Layout: flowx, Cell: flowy", "", "flowy");
+		createFlowPanel(result, "Layout: flowy, Cell: flowx", "flowy", "flowx");
+		createFlowPanel(result, "Layout: flowy, Cell: flowy", "flowy", "flowy");
 
-		return tabbedPane;
+		return result;
 	}
 
 	private QWidget createFlowPanel(final QTabWidget parent, final String text, final String gridFlow, final String cellFlow) {
 		final MigLayout lm = new MigLayout("center, wrap 3," + gridFlow, "[110,fill]", "[110,fill]");
-		final QWidget panel = createTabPanel(parent, text, lm);
+		final QWidget result = createTabPanel(parent, text, lm);
 
 		for (int i = 0; i < 9; i++) {
-			final QWidget b = createPanel(panel, "" + (i + 1), cellFlow);
+			final QWidget b = createPanel(result, "" + (i + 1), cellFlow);
 
 			// TODO: Font
 			// Font f = deriveFont(b, SWT.DEFAULT, 20);
 			// b.getChildren()[0].setFont(f);
 		}
 
-		final QWidget b = createPanel(panel, "5:2", cellFlow + ",cell 1 1");
+		final QWidget b = createPanel(result, "5:2", cellFlow + ",cell 1 1");
 		// TODO: Font
 		// Font f = deriveFont(b, SWT.DEFAULT, 20);
 		// b.getChildren()[0].setFont(f);
 
-		return panel;
+		return result;
 	}
 
-	public QWidget createGrouping(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget(parent);
+	public QTabWidget createGrouping(final QWidget parent) {
+		final QTabWidget result = createTabWidget(parent);
 
 		// Ungrouped
 		final MigLayout ugM = new MigLayout("", "[]push[][][]", "");
-		final QWidget ugPanel = createTabPanel(tabbedPane, "Ungrouped", ugM);
+		final QWidget ugPanel = createTabPanel(result, "Ungrouped", ugM);
 
 		createButton(ugPanel, "Help", "");
 		createButton(ugPanel, "< Back", "gap push");
@@ -930,7 +934,7 @@ public class QtDemo extends QMainWindow {
 
 		// Grouped Components
 		final MigLayout gM = new MigLayout("nogrid, fillx");
-		final QWidget gPanel = createTabPanel(tabbedPane, "Grouped (Components)", gM);
+		final QWidget gPanel = createTabPanel(result, "Grouped (Components)", gM);
 
 		createButton(gPanel, "Help", "sg");
 		createButton(gPanel, "< Back", "sg, gap push");
@@ -940,7 +944,7 @@ public class QtDemo extends QMainWindow {
 
 		// Grouped Columns
 		final MigLayout gcM = new MigLayout("", "[sg,fill]push[sg,fill][sg,fill]unrel[sg,fill]unrel[sg,fill]", "");
-		final QWidget gcPanel = createTabPanel(tabbedPane, "Grouped (Columns)", gcM);
+		final QWidget gcPanel = createTabPanel(result, "Grouped (Columns)", gcM);
 
 		createButton(gcPanel, "Help", "");
 		createButton(gcPanel, "< Back", "");
@@ -950,7 +954,7 @@ public class QtDemo extends QMainWindow {
 
 		// Ungrouped Rows
 		final MigLayout ugrM = new MigLayout();
-		final QWidget ugrPanel = createTabPanel(tabbedPane, "Ungrouped Rows", ugrM);
+		final QWidget ugrPanel = createTabPanel(result, "Ungrouped Rows", ugrM);
 
 		createLabel(ugrPanel, "File Number:", "");
 		createTextField(ugrPanel, "30                            ", "wrap");
@@ -975,7 +979,7 @@ public class QtDemo extends QMainWindow {
 
 		// Grouped Rows
 		final MigLayout grM = new MigLayout("", "[]", "[sg]"); // "sg" is the only difference to previous panel
-		final QWidget grPanel = createTabPanel(tabbedPane, "Grouped Rows", grM);
+		final QWidget grPanel = createTabPanel(result, "Grouped Rows", grM);
 
 		createLabel(grPanel, "File Number:", "");
 		createTextField(grPanel, "30                            ", "wrap");
@@ -998,15 +1002,15 @@ public class QtDemo extends QMainWindow {
 		createLabel(grPanel, "Destination:", "");
 		createTextField(grPanel, "30                            ", "wrap");
 
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createUnits(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget(parent);
+	public QTabWidget createUnits(final QWidget parent) {
+		final QTabWidget result = createTabWidget(parent);
 
 		// Horizontal
 		final MigLayout hLM = new MigLayout("wrap", "[right][]", "");
-		final QWidget hPanel = createTabPanel(tabbedPane, "Horizontal", hLM);
+		final QWidget hPanel = createTabPanel(result, "Horizontal", hLM);
 
 		final String[] sizes = new String[] {"72pt", "25.4mm", "2.54cm", "1in", "72px", "96px", "120px", "25%", "20sp"};
 		for (int i = 0; i < sizes.length; i++) {
@@ -1016,7 +1020,7 @@ public class QtDemo extends QMainWindow {
 
 		// Horizontal lp
 		final MigLayout hlpLM = new MigLayout("", "[right][][]", "");
-		final QWidget hlpPanel = createTabPanel(tabbedPane, "Horizontal LP", hlpLM);
+		final QWidget hlpPanel = createTabPanel(result, "Horizontal LP", hlpLM);
 
 		createLabel(hlpPanel, "9 cols", "");
 		createTextField(hlpPanel, "", "wmin 9*6");
@@ -1029,7 +1033,7 @@ public class QtDemo extends QMainWindow {
 
 		// Vertical
 		final MigLayout vLM = new MigLayout("wrap,flowy", "[c]", "[top][top]");
-		final QWidget vPanel = createTabPanel(tabbedPane, "Vertical", vLM);
+		final QWidget vPanel = createTabPanel(result, "Vertical", vLM);
 
 		final String[] vSizes = new String[] {"72pt", "25.4mm", "2.54cm", "1in", "72px", "96px", "120px", "25%", "20sp"};
 		for (int i = 0; i < sizes.length; i++) {
@@ -1039,7 +1043,7 @@ public class QtDemo extends QMainWindow {
 
 		// Vertical lp
 		final MigLayout vlpLM = new MigLayout("wrap,flowy", "[c]", "[top][top]40px[top][top]");
-		final QWidget vlpPanel = createTabPanel(tabbedPane, "Vertical LP", vlpLM);
+		final QWidget vlpPanel = createTabPanel(result, "Vertical LP", vlpLM);
 
 		createLabel(vlpPanel, "4 rows", "");
 		createTextArea(vlpPanel, "\n\n\n\n", "width 50!");
@@ -1058,14 +1062,14 @@ public class QtDemo extends QMainWindow {
 		createLabel(vlpPanel, "button", "skip 2");
 		createButton(vlpPanel, "...", "");
 
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createComponentSizes(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget();
+	public QTabWidget createComponentSizes(final QWidget parent) {
+		final QTabWidget result = createTabWidget();
 
 		final QGridLayout tabPanelLayout = new QGridLayout();
-		final QWidget tabPanel = createTabPanel(tabbedPane, "Component Sizes", tabPanelLayout);
+		final QWidget tabPanel = createTabPanel(result, "Component Sizes", tabPanelLayout);
 
 		final QSplitter splitPane = new QSplitter(tabPanel);
 		splitPane.setOrientation(Orientation.Horizontal);
@@ -1102,17 +1106,17 @@ public class QtDemo extends QMainWindow {
 				"");
 		descrText.setFrameShape(Shape.NoFrame);
 
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createBoundSizes(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget();
+	public QTabWidget createBoundSizes(final QWidget parent) {
+		final QTabWidget result = createTabWidget();
 
 		for (int i = 0; i < 2; i++) { // Jumping for 0 and Stable for 1
 			final String colConstr = i == 0 ? "[right][300]" : "[right, 150lp:pref][300]";
 
 			final MigLayout lm1 = new MigLayout("wrap", colConstr, "");
-			final QWidget panel1 = createTabPanel(tabbedPane, i == 0 ? "Jumping 1" : "Stable 1", lm1);
+			final QWidget panel1 = createTabPanel(result, i == 0 ? "Jumping 1" : "Stable 1", lm1);
 
 			createLabel(panel1, "File Number:", "");
 			createTextField(panel1, "", "growx");
@@ -1124,7 +1128,7 @@ public class QtDemo extends QMainWindow {
 			createTextField(panel1, "", "growx");
 
 			final MigLayout lm2 = new MigLayout("wrap", colConstr, "");
-			final QWidget panel2 = createTabPanel(tabbedPane, i == 0 ? "Jumping 2" : "Stable 2", lm2);
+			final QWidget panel2 = createTabPanel(result, i == 0 ? "Jumping 2" : "Stable 2", lm2);
 
 			createLabel(panel2, "Shipper:", "");
 			createTextField(panel2, "        ", "split 2");
@@ -1139,15 +1143,15 @@ public class QtDemo extends QMainWindow {
 			createTextField(panel2, "        ", "split 2");
 			createTextField(panel2, "", "growx");
 		}
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createCellPosition(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget();
+	public QTabWidget createCellPosition(final QWidget parent) {
+		final QTabWidget result = createTabWidget();
 
 		// Absolute grid position
 		final MigLayout absLM = new MigLayout("", "[100:pref,fill]", "[100:pref,fill]");
-		final QWidget absPanel = createTabPanel(tabbedPane, "Absolute", absLM);
+		final QWidget absPanel = createTabPanel(result, "Absolute", absLM);
 
 		createPanel(absPanel, "cell 0 0", null);
 		createPanel(absPanel, "cell 2 0", null);
@@ -1162,7 +1166,7 @@ public class QtDemo extends QMainWindow {
 			"wrap",
 			"[100:pref,fill][100:pref,fill][100:pref,fill][100:pref,fill]",
 			"[100:pref,fill]");
-		final QWidget relAwPanel = createTabPanel(tabbedPane, "Relative + Wrap", relAwLM);
+		final QWidget relAwPanel = createTabPanel(result, "Relative + Wrap", relAwLM);
 
 		createPanel(relAwPanel, "", null);
 		createPanel(relAwPanel, "skip", null);
@@ -1174,7 +1178,7 @@ public class QtDemo extends QMainWindow {
 
 		// Relative grid position with manual wrap
 		final MigLayout relWLM = new MigLayout("", "[100:pref,fill]", "[100:pref,fill]");
-		final QWidget relWPanel = createTabPanel(tabbedPane, "Relative", relWLM);
+		final QWidget relWPanel = createTabPanel(result, "Relative", relWLM);
 
 		createPanel(relWPanel, "", null);
 		createPanel(relWPanel, "skip", null);
@@ -1186,7 +1190,7 @@ public class QtDemo extends QMainWindow {
 
 		// Mixed relative and absolute grid position
 		final MigLayout mixLM = new MigLayout("", "[100:pref,fill]", "[100:pref,fill]");
-		final QWidget mixPanel = createTabPanel(tabbedPane, "Mixed", mixLM);
+		final QWidget mixPanel = createTabPanel(result, "Mixed", mixLM);
 
 		createPanel(mixPanel, "", null);
 		createPanel(mixPanel, "cell 2 0", null);
@@ -1196,14 +1200,14 @@ public class QtDemo extends QMainWindow {
 		createPanel(mixPanel, "cell 2 2,split", null);
 		createPanel(mixPanel, "", null);
 
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createOrientation(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget();
+	public QTabWidget createOrientation(final QWidget parent) {
+		final QTabWidget result = createTabWidget();
 
 		final MigLayout lm = new MigLayout("flowy", "[grow,fill]", "[]0[]15lp[]0[]");
-		final QWidget mainPanel = createTabPanel(tabbedPane, "Orientation", lm);
+		final QWidget mainPanel = createTabPanel(result, "Orientation", lm);
 
 		// Default orientation
 		final QWidget defPanel = createPanel(mainPanel, new MigLayout("", "[][grow,fill]", ""));
@@ -1242,15 +1246,15 @@ public class QtDemo extends QMainWindow {
 		createTextField(ltrbPanel, "", "");
 		createTextField(ltrbPanel, "", "");
 
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createAbsolutePosition(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget();
+	public QTabWidget createAbsolutePosition(final QWidget parent) {
+		final QTabWidget result = createTabWidget();
 
 		// Pos tab
 		final QGridLayout posTabLayout = new QGridLayout(); // filllayout
-		final QWidget posTabPanel = createTabPanel(tabbedPane, "X Y Positions", posTabLayout);
+		final QWidget posTabPanel = createTabPanel(result, "X Y Positions", posTabLayout);
 
 		final QWidget posPanel = new QWidget(posTabPanel);
 		final MigLayout posPanelLayout = new MigLayout();
@@ -1274,10 +1278,10 @@ public class QtDemo extends QMainWindow {
 				"pos 500-container.xpos 500-container.ypos");
 
 		// Bounds tab
-		final QWidget boundsTabPanel = new QWidget(tabbedPane);
+		final QWidget boundsTabPanel = new QWidget(result);
 		final QGridLayout boundsTabLayout = new QGridLayout(); // filllayout
 		boundsTabPanel.setLayout(boundsTabLayout);
-		tabbedPane.addTab(boundsTabPanel, "X1 Y1 X2 Y2 Bounds");
+		result.addTab(boundsTabPanel, "X1 Y1 X2 Y2 Bounds");
 
 		final QWidget boundsPanel = new QWidget();
 		final MigLayout boundsPanelLayout = new MigLayout();
@@ -1308,7 +1312,7 @@ public class QtDemo extends QMainWindow {
 
 		windowMovedListeningWidget = posPanel;
 
-		return tabbedPane;
+		return result;
 	}
 
 	@Override
@@ -1320,10 +1324,10 @@ public class QtDemo extends QMainWindow {
 		super.moveEvent(event);
 	}
 
-	public QWidget createComponentLinks(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget();
+	public QTabWidget createComponentLinks(final QWidget parent) {
+		final QTabWidget result = createTabWidget();
 
-		final QWidget linksPanel = createTabPanel(tabbedPane, "Component Links", new MigLayout());
+		final QWidget linksPanel = createTabPanel(result, "Component Links", new MigLayout());
 
 		// Links tab
 		createButton(linksPanel, "Mini", "pos null ta.y ta.x2 null, pad 3 0 -3 0");
@@ -1336,7 +1340,7 @@ public class QtDemo extends QMainWindow {
 		createButton(linksPanel, "pos ta.x ta.y2+100 ta.x2 null", null);
 
 		// External tab
-		final QWidget externalPanel = createTabPanel(tabbedPane, "External Components", new MigLayout());
+		final QWidget externalPanel = createTabPanel(result, "External Components", new MigLayout());
 
 		final QPushButton extButt = createButton(externalPanel, "Bounds Externally Set!", "id ext, external");
 		extButt.setGeometry(250, 130, 200, 40);
@@ -1344,7 +1348,7 @@ public class QtDemo extends QMainWindow {
 		createButton(externalPanel, "pos null null ext.x ext.y", "pos null null ext.x ext.y");
 
 		// End grouping
-		final QWidget egTabPanel = createTabPanel(tabbedPane, "End Grouping", new QGridLayout());
+		final QWidget egTabPanel = createTabPanel(result, "End Grouping", new QGridLayout());
 		final QWidget egPanel = createPanel(egTabPanel, new MigLayout());
 		egTabPanel.layout().addWidget(egPanel);
 
@@ -1354,7 +1358,7 @@ public class QtDemo extends QMainWindow {
 		createButton(egPanel, "id b4, endgroupx g1, pos (b1.x+6ind) (b3.y2+rel)", null);
 
 		// Group Bounds tab
-		final QWidget gpTabPanel = createTabPanel(tabbedPane, "Group Bounds", new QGridLayout());
+		final QWidget gpTabPanel = createTabPanel(result, "Group Bounds", new QGridLayout());
 		final MigLayout gpLayout = new MigLayout();
 		final QWidget gpPanel = createPanel(gpTabPanel, gpLayout);
 		gpTabPanel.layout().addWidget(gpPanel);
@@ -1378,14 +1382,14 @@ public class QtDemo extends QMainWindow {
 		createButton(gpPanel, "pos grp1.x2 n n grp1.y", null);
 		createButton(gpPanel, "pos grp1.x2 grp1.y2", null);
 
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createDocking(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget(parent);
+	public QTabWidget createDocking(final QWidget parent) {
+		final QTabWidget result = createTabWidget(parent);
 		//tabbedPane.setLayoutData("grow");
 
-		final QWidget p1 = createTabPanel(tabbedPane, "Docking 1", new MigLayout("fill"));
+		final QWidget p1 = createTabPanel(result, "Docking 1", new MigLayout("fill"));
 
 		createPanel(p1, "1. North", "north");
 		createPanel(p1, "2. West", "west");
@@ -1414,7 +1418,7 @@ public class QtDemo extends QMainWindow {
 		//table.setLinesVisible(true);
 		((MigLayout) p1.layout()).addWidget(table, "grow");
 
-		final QWidget p2 = createTabPanel(tabbedPane, "Docking 2 (fill)", new MigLayout("fill", "[c]", ""));
+		final QWidget p2 = createTabPanel(result, "Docking 2 (fill)", new MigLayout("fill", "[c]", ""));
 
 		createPanel(p2, "1. North", "north");
 		createPanel(p2, "2. North", "north");
@@ -1426,7 +1430,7 @@ public class QtDemo extends QMainWindow {
 		createButton(p2, "8. Normal", "");
 		createButton(p2, "9. Normal", "");
 
-		final QWidget p3 = createTabPanel(tabbedPane, "Docking 3", new MigLayout());
+		final QWidget p3 = createTabPanel(result, "Docking 3", new MigLayout());
 
 		createPanel(p3, "1. North", "north");
 		createPanel(p3, "2. South", "south");
@@ -1434,7 +1438,7 @@ public class QtDemo extends QMainWindow {
 		createPanel(p3, "4. East", "east");
 		createButton(p3, "5. Normal", "");
 
-		final QWidget p4 = createTabPanel(tabbedPane, "Docking 4", new MigLayout());
+		final QWidget p4 = createTabPanel(result, "Docking 4", new MigLayout());
 
 		createPanel(p4, "1. North", "north");
 		createPanel(p4, "2. North", "north");
@@ -1446,7 +1450,7 @@ public class QtDemo extends QMainWindow {
 		createButton(p4, "8. Normal", "");
 		createButton(p4, "9. Normal", "");
 
-		final QWidget p5 = createTabPanel(tabbedPane, "Docking 5 (fillx)", new MigLayout("fillx", "[c]", ""));
+		final QWidget p5 = createTabPanel(result, "Docking 5 (fillx)", new MigLayout("fillx", "[c]", ""));
 
 		createPanel(p5, "1. North", "north");
 		createPanel(p5, "2. North", "north");
@@ -1458,7 +1462,7 @@ public class QtDemo extends QMainWindow {
 		createButton(p5, "8. Normal", "");
 		createButton(p5, "9. Normal", "");
 
-		final QWidget p6 = createTabPanel(tabbedPane, "Random Docking", new MigLayout("fill"));
+		final QWidget p6 = createTabPanel(result, "Random Docking", new MigLayout("fill"));
 
 		final String[] sides = {"north", "east", "south", "west"};
 		final Random rand = new Random();
@@ -1468,14 +1472,14 @@ public class QtDemo extends QMainWindow {
 		}
 		createPanel(p6, "I'm in the Center!", "grow");
 
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createButtonBars(final QWidget parent) {
+	public QTabWidget createButtonBars(final QWidget parent) {
+		final QTabWidget result = createTabWidget(parent);
 		final MigLayout lm = new MigLayout("ins 0 0 15lp 0", "[grow]", "[grow]u[baseline,nogrid]");
+		final QWidget mainPanel = createTabPanel(result, "Button Bars", lm);
 
-		final QWidget mainPanel = new QWidget(parent);
-		mainPanel.setLayout(lm);
 		form = mainPanel;
 
 		final QTabWidget tabbedPane = new QTabWidget(mainPanel);
@@ -1502,7 +1506,7 @@ public class QtDemo extends QMainWindow {
 
 		(PlatformDefaults.getPlatform() == PlatformDefaults.WINDOWS_XP ? winButt : macButt).setChecked(true);
 
-		return mainPanel;
+		return result;
 	}
 
 	protected void clickedButtonWindows() {
@@ -1566,10 +1570,10 @@ public class QtDemo extends QMainWindow {
 		return panel;
 	}
 
-	public QWidget createLayoutShowdown(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget(parent);
+	public QTabWidget createLayoutShowdown(final QWidget parent) {
+		final QTabWidget result = createTabWidget(parent);
 
-		final QWidget p1 = createTabPanel(tabbedPane, "Layout Showdown (pure)", new MigLayout("", "[]15[][grow,fill]15[grow]"));
+		final QWidget p1 = createTabPanel(result, "Layout Showdown (pure)", new MigLayout("", "[]15[][grow,fill]15[grow]"));
 
 		// References to text fields not stored to reduce code clutter.
 
@@ -1603,7 +1607,7 @@ public class QtDemo extends QMainWindow {
 
 		// Fixed version *******************************************
 
-		final QWidget p2 = createTabPanel(tabbedPane, "Layout Showdown (improved)", new MigLayout(
+		final QWidget p2 = createTabPanel(result, "Layout Showdown (improved)", new MigLayout(
 			"",
 			"[]15[][grow,fill]15[][grow,fill]"));
 
@@ -1637,17 +1641,17 @@ public class QtDemo extends QMainWindow {
 		createButton(p2, "Save", "tag other");
 		createButton(p2, "Cancel", "tag cancel, wrap push");
 
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createAPIConstraints1(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget(parent);
+	public QTabWidget createAPIConstraints1(final QWidget parent) {
+		final QTabWidget result = createTabWidget(parent);
 
 		final LC layC = new LC().fill().wrap();
 		final AC colC = new AC().align("right", 0).fill(1, 3).grow(100, 1, 3).align("right", 2).gap("15", 1);
 		final AC rowC = new AC().align("top", 7).gap("15!", 6).grow(100, 8);
 
-		final QWidget p1 = createTabPanel(tabbedPane, "Layout Showdown (improved)", new MigLayout(layC, colC, rowC));
+		final QWidget p1 = createTabPanel(result, "Layout Showdown (improved)", new MigLayout(layC, colC, rowC));
 
 		// References to text fields not stored to reduce code clutter.
 
@@ -1679,17 +1683,17 @@ public class QtDemo extends QMainWindow {
 		createButton(p1, "Save", new CC().tag("other"));
 		createButton(p1, "Cancel", new CC().tag("cancel"));
 
-		return tabbedPane;
+		return result;
 	}
 
-	public QWidget createAPIConstraints2(final QWidget parent) {
-		final QTabWidget tabbedPane = new QTabWidget(parent);
+	public QTabWidget createAPIConstraints2(final QWidget parent) {
+		final QTabWidget result = createTabWidget(parent);
 
 		final LC layC = new LC().fill().wrap();
 		final AC colC = new AC().align("right", 0).fill(1, 3).grow(100, 1, 3).align("right", 2).gap("15", 1);
 		final AC rowC = new AC().index(6).gap("15!").align("top").grow(100, 8);
 
-		final QWidget p1 = createTabPanel(tabbedPane, "Layout Showdown (improved)", new MigLayout(layC, colC, rowC));
+		final QWidget p1 = createTabPanel(result, "Layout Showdown (improved)", new MigLayout(layC, colC, rowC));
 
 		// References to text fields not stored to reduce code clutter.
 
@@ -1720,7 +1724,7 @@ public class QtDemo extends QMainWindow {
 		createButton(p1, "Save", new CC().tag("other"));
 		createButton(p1, "Cancel", new CC().tag("cancel"));
 
-		return tabbedPane;
+		return result;
 	}
 
 	protected void dispatchSelection() {
@@ -1730,22 +1734,12 @@ public class QtDemo extends QMainWindow {
 		}
 
 		if (allowDispatch.getAndSet(false)) {
-			System.out.println("dispatchSelection");
 
 			if (activeTab != null) {
-
-				final int countBefore = QApplication.allWidgets().size();
-
 				layoutDisplayPanelLayout.takeWidget(activeTab);
-				//layoutDisplayPanelLayout.removeWidget(activeTab);
 				activeTab.setParent(null);
 				activeTab.close();
 				activeTab = null;
-
-				final int countAfter = QApplication.allWidgets().size();
-
-				System.out.println("New Count: " + countAfter + " [" + countBefore + "]");
-				System.out.println("layoutDisplayPanelLayout Count: " + layoutDisplayPanelLayout.count());
 			}
 
 			windowMovedListeningWidget = null;
@@ -1753,7 +1747,7 @@ public class QtDemo extends QMainWindow {
 			final String methodName = "create" + PANELS[ix][0].replace(" ", "");
 
 			try {
-				activeTab = (QWidget) QtDemo.class.getMethod(methodName, new Class[] {QWidget.class}).invoke(
+				activeTab = (QTabWidget) QtDemo.class.getMethod(methodName, new Class[] {QWidget.class}).invoke(
 						QtDemo.this,
 						new Object[] {layoutDisplayPanel});
 				activeTab.setAttribute(WidgetAttribute.WA_DeleteOnClose);
@@ -1763,10 +1757,25 @@ public class QtDemo extends QMainWindow {
 			} catch (final Exception e1) {
 				e1.printStackTrace(); // Should never happpen...
 			}
-			System.out.println("  /dispatchSelection");
 
 			allowDispatch.set(true);
 		}
+	}
+
+	protected QTabWidget createTabWidget(final QWidget parent) {
+		final QTabWidget result;
+		if (parent == null) {
+			result = new QTabWidget();
+		} else {
+			result = new QTabWidget(parent);
+		}
+		//result.tabCloseRequested.connect(this, "tabCloseRequested(int)");
+		result.setTabsClosable(true);
+		return result;
+	}
+
+	protected QTabWidget createTabWidget() {
+		return createTabWidget(null);
 	}
 
 	/*
