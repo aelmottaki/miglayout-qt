@@ -14,7 +14,6 @@
 	</properties>
 	
 	<dependencies>
-<!-- 
 		<dependency>
 			<groupId>com.miglayout</groupId>
 			<artifactId>miglayout</artifactId>
@@ -22,18 +21,68 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
- -->		
  	</dependencies>
 
 	<profiles>
 		<profile>
-			<id>linux</id>
+			<id>linux64</id>
 			<activation>
 				<os>
 					<name>Linux</name>
-					<!-- <arch>amd64</arch> -->
+					<arch>amd64</arch>
 				</os>
 			</activation>
+		</profile>
+
+		<profile>
+			<id>linux32</id>
+			<activation>
+				<os>
+					<name>Linux</name>
+					<arch>i386</arch>
+				</os>
+			</activation>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>net.sf.qtjambi</groupId>
+						<artifactId>qtjambi-maven-plugin</artifactId>
+						<version>4.6.3_04</version>
+						<executions>
+							<execution>
+								<id>qtjambi</id>
+								<goals>
+									<goal>generate</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<!-- Specifies where sources are. This parameter is MANDATORY -->
+							<sourcesDir>src/main/java</sourcesDir>
+							<!-- following parameters aren't mandatory, they use defaults as specified 
+								here if not specified <translationsDir>src/main/resources/translations</translationsDir> 
+								<destinationDir>target/generated-sources/qtjambi</destinationDir> -->
+							<!-- cause -noobsolete switch for lupdate -->
+							<noObsoleteTranslations>true</noObsoleteTranslations>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+
+			<dependencies>
+				<dependency>
+					<groupId>net.sf.qtjambi</groupId>
+					<artifactId>qtjambi</artifactId>
+					<version>4.6.3.2</version>
+				</dependency>
+				<dependency>
+					<groupId>net.miblounge</groupId>
+					<artifactId>qtjambi.util</artifactId>
+					<version>4.6.3</version>
+					<type>jar</type>
+				</dependency>
+			</dependencies>
 		</profile>
 
 		<profile>
@@ -77,7 +126,7 @@
 				<dependency>
 					<groupId>net.sf.qtjambi</groupId>
 					<artifactId>qtjambi</artifactId>
-					<version>4.6.3</version>
+					<version>4.6.3.2</version>
 				</dependency>
 			</dependencies>
 		</profile>
