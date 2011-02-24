@@ -44,8 +44,15 @@ import net.miginfocom.layout.LC;
 import net.miginfocom.layout.LayoutUtil;
 import net.miginfocom.layout.PlatformDefaults;
 
+import com.trolltech.qt.core.QEvent;
+import com.trolltech.qt.core.QEvent.Type;
+import com.trolltech.qt.core.QPoint;
 import com.trolltech.qt.core.QSize;
 import com.trolltech.qt.core.Qt;
+import com.trolltech.qt.core.Qt.KeyboardModifier;
+import com.trolltech.qt.core.Qt.KeyboardModifiers;
+import com.trolltech.qt.core.Qt.MouseButton;
+import com.trolltech.qt.core.Qt.MouseButtons;
 import com.trolltech.qt.core.Qt.Orientation;
 import com.trolltech.qt.core.Qt.WidgetAttribute;
 import com.trolltech.qt.gui.QApplication;
@@ -63,6 +70,7 @@ import com.trolltech.qt.gui.QLineEdit;
 import com.trolltech.qt.gui.QListWidget;
 import com.trolltech.qt.gui.QMainWindow;
 import com.trolltech.qt.gui.QMessageBox;
+import com.trolltech.qt.gui.QMouseEvent;
 import com.trolltech.qt.gui.QMoveEvent;
 import com.trolltech.qt.gui.QPalette;
 import com.trolltech.qt.gui.QPalette.ColorRole;
@@ -218,6 +226,7 @@ public class QtDemo extends QMainWindow {
 	// Helper...
 	private QPushButton winButt;
 	private QPushButton macButt;
+	private QPushButton helpButt;
 	private QLabel formatLabel;
 	private QWidget form;
 	private QWidget windowMovedListeningWidget = null;
@@ -1498,10 +1507,13 @@ public class QtDemo extends QMainWindow {
 		winButt = createToggleButton(mainPanel, "Windows", "wmin button");
 		macButt = createToggleButton(mainPanel, "Mac OS X", "wmin button");
 
-		winButt.clicked.connect(this, "clickedButtonWindows()");
-		macButt.clicked.connect(this, "clickedButtonMacOS()");
+		//		winButt.clicked.connect(this, "clickedButtonWindows()");
+		//		macButt.clicked.connect(this, "clickedButtonMacOS()");
 
-		final QPushButton helpButt = createButton(mainPanel, "Help", "gap unrel,wmin button");
+		winButt.clicked.connect(this, "onClick()");
+		macButt.clicked.connect(this, "onClick()");
+
+		helpButt = createButton(mainPanel, "Help", "gap unrel,wmin button");
 		helpButt.clicked.connect(this, "clickedButtonHelp()");
 
 		(PlatformDefaults.getPlatform() == PlatformDefaults.WINDOWS_XP ? winButt : macButt).setChecked(true);
@@ -2066,6 +2078,22 @@ public class QtDemo extends QMainWindow {
 		//		configureActiveComponet(b);
 
 		return b;
+	}
+
+	protected void onClick() {
+		if (helpButt != null) {
+			System.out.println("Button click");
+			final QPoint pos = new QPoint(2, 2);
+			final MouseButtons mouse = new MouseButtons(MouseButton.LeftButton);
+			final KeyboardModifiers keyboard = new KeyboardModifiers(KeyboardModifier.NoModifier);
+			final QEvent pressEvent = new QMouseEvent(Type.MouseButtonPress, pos, MouseButton.LeftButton, mouse, keyboard);
+			QApplication.postEvent(helpButt, pressEvent);
+
+			final QEvent releaseEvent = new QMouseEvent(Type.MouseButtonRelease, pos, MouseButton.LeftButton, mouse, keyboard);
+			QApplication.postEvent(helpButt, releaseEvent);
+		} else {
+			System.out.println("winButt null");
+		}
 	}
 
 	private QPushButton createToggleButton(final QWidget parent, final String text, final Object layoutdata) {
