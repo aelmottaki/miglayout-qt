@@ -241,6 +241,10 @@ public class QtComponentWrapper implements ComponentWrapper {
 
 	@Override
 	public final int getMaximumHeight(final int sz) {
+		if (getComponetType(false) == TYPE_BUTTON) {
+			return c.sizeHint().height();
+		}
+
 		return c.maximumSize().height();
 	}
 
