@@ -63,6 +63,10 @@ import com.trolltech.qt.gui.QLayoutItemInterface;
 import com.trolltech.qt.gui.QWidget;
 
 public final class MigLayout extends QLayout implements Externalizable {
+	private static boolean layoutVeto = false;
+
+	private static int skips = 0;
+
 	private Object nextConstraints = null;
 
 	private final List<QLayoutItemInterface> items = new ArrayList<QLayoutItemInterface>();
@@ -76,7 +80,6 @@ public final class MigLayout extends QLayout implements Externalizable {
 	private final Map<QLayoutItemInterface, Object> scrConstrMap = new IdentityHashMap<QLayoutItemInterface, Object>(8);
 
 	/**
-	 * Hold the serializable text representation of the constraints.
 	 */
 	private Object layoutConstraints = ""; // Should never be null!
 	private Object colConstraints = ""; // Should never be null!
@@ -97,6 +100,12 @@ public final class MigLayout extends QLayout implements Externalizable {
 	private transient int lastHash = -1;
 
 	private transient ArrayList<LayoutCallback> callbackList = null;
+
+	private final QSize[] cachedSizes = new QSize[3];
+
+	private final long lastGrid = 0;
+
+	private Object lastRect;
 
 	/**
 	 * Constructor with no constraints.
@@ -373,10 +382,15 @@ public final class MigLayout extends QLayout implements Externalizable {
 
 	@Override
 	public void setGeometry(final QRect rect) {
-		//		if (!rect.equals(lastRect)) {
-		//			super.setGeometry(rect);
-		//		}
-		//		lastRect = rect;
+		if (layoutVeto) {
+			return;
+		}
+
+		if (!rect.equals(lastRect)) {
+			super.setGeometry(rect);
+			grid = null;
+		}
+		lastRect = rect;
 
 		checkCache(parentWidget());
 
@@ -384,42 +398,50 @@ public final class MigLayout extends QLayout implements Externalizable {
 				rect.x() + parentWidget().contentsMargins().left(), rect.y() + parentWidget().contentsMargins().top(),
 				rect.width(), rect.height()};
 
-		@SuppressWarnings("unused")
-		final boolean layoutAgain = grid.layout(b, lc.getAlignX(), lc.getAlignY(), false, true);
-
-		//		if (layoutAgain) {
-		//			grid = null;
-		//			checkCache(parentWidget());
-		//			grid.layout(b, lc.getAlignX(), lc.getAlignY(), false, false);
-		//		}
+		grid.layout(b, lc.getAlignX(), lc.getAlignY(), false, true);
 	}
 
-	private void checkCache(final QWidget parent) {
+	private boolean checkCache(final QWidget parent) {
 		if (parent == null) {
-			return;
+			return true;
 		}
 
-		// Check if the grid is valid
-		final int mc = PlatformDefaults.getModCount();
-		if (lastModCount != mc) {
-			grid = null;
-			lastModCount = mc;
-		}
+		//		if (grid == null) {
+		//			final ContainerWrapper par = checkParent(parent);
+		//			grid = new Grid(par, lc, rowSpecs, colSpecs, ccMap, callbackList);
+		//			return false;
+		//		}
 
-		int hash = parent.size().hashCode();
+		//		final long currentTimeInMs = System.currentTimeMillis();
+		//		if (Math.abs(currentTimeInMs - lastGrid) >= 100000) {
+		int hash = 17;
 		for (final Iterator<ComponentWrapper> it = ccMap.keySet().iterator(); it.hasNext();) {
 			hash = 17 * hash + it.next().getLayoutHashCode();
 		}
-
 		if (hash != lastHash) {
 			grid = null;
 			lastHash = hash;
 		}
+		//			lastGrid = currentTimeInMs;
+		//		} else {
+		//			skip();
+		//		}
 
 		if (grid == null) {
 			final ContainerWrapper par = checkParent(parent);
 			grid = new Grid(par, lc, rowSpecs, colSpecs, ccMap, callbackList);
+			return false;
 		}
+
+		return true;
+	}
+
+	private static void skip() {
+		skips++;
+		if (skips % 1000 == 0) {
+			System.out.println("Skips " + skips);
+		}
+
 	}
 
 	private ContainerWrapper checkParent(final QWidget parent) {
@@ -471,6 +493,7 @@ public final class MigLayout extends QLayout implements Externalizable {
 		setComponentConstraintsImpl(item, nextConstraints, true);
 		nextConstraints = null;
 		items.add(item);
+		grid = null;
 	}
 
 	@Override
@@ -487,18 +510,25 @@ public final class MigLayout extends QLayout implements Externalizable {
 		return items.get(index);
 	}
 
-	private QSize calcSize(final int type) {
-		checkCache(parentWidget());
-
+	private void calcSizes() {
 		// add insets
 		final int marginWidth = parentWidget().contentsMargins().left() + parentWidget().contentsMargins().right();
 		final int marginHeight = parentWidget().contentsMargins().top() + parentWidget().contentsMargins().bottom();
 
-		final int w = LayoutUtil.getSizeSafe(grid != null ? grid.getWidth() : null, type) + marginWidth;
-		final int h = LayoutUtil.getSizeSafe(grid != null ? grid.getHeight() : null, type) + marginHeight;
+		for (int i = 0; i < 3; i++) {
+			final int w = LayoutUtil.getSizeSafe(grid != null ? grid.getWidth() : null, i) + marginWidth;
+			final int h = LayoutUtil.getSizeSafe(grid != null ? grid.getHeight() : null, i) + marginHeight;
 
-		//return new QSize(w, h);
-		return new QSize(w, h);
+			cachedSizes[i] = new QSize(w, h);
+		}
+	}
+
+	private QSize calcSize(final int type) {
+		if (!checkCache(parentWidget())) {
+			calcSizes();
+		}
+
+		return cachedSizes[type];
 	}
 
 	@Override
@@ -528,6 +558,8 @@ public final class MigLayout extends QLayout implements Externalizable {
 		// remove from MigLayout as well
 		scrConstrMap.remove(result);
 		ccMap.remove(result);
+
+		grid = null;
 
 		return result;
 	}
@@ -566,4 +598,7 @@ public final class MigLayout extends QLayout implements Externalizable {
 		return null;
 	}
 
+	public static void setLayoutVeto(final boolean veto) {
+		layoutVeto = veto;
+	}
 }

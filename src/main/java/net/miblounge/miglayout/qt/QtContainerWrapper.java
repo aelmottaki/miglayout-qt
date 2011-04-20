@@ -41,18 +41,19 @@ import net.miginfocom.layout.ContainerWrapper;
 
 import com.trolltech.qt.core.QObject;
 import com.trolltech.qt.core.Qt;
+import com.trolltech.qt.gui.QLayout;
 import com.trolltech.qt.gui.QWidget;
 
 public final class QtContainerWrapper extends QtComponentWrapper implements ContainerWrapper {
-	public QtContainerWrapper(final QWidget c) {
-		super(c);
+	public QtContainerWrapper(final QWidget component) {
+		super(component);
 	}
 
 	@Override
 	public ComponentWrapper[] getComponents() {
-		final QWidget widget = (QWidget) getComponent();
+		final QWidget component = getComponent();
 		final List<QtComponentWrapper> wrappers = new Vector<QtComponentWrapper>();
-		for (final QObject child : widget.children()) {
+		for (final QObject child : component.children()) {
 			if (child.isWidgetType()) {
 				wrappers.add(new QtComponentWrapper((QWidget) child));
 			}
@@ -70,22 +71,22 @@ public final class QtContainerWrapper extends QtComponentWrapper implements Cont
 
 	@Override
 	public int getComponentCount() {
-		return ((QWidget) getComponent()).children().size();
+		return getComponent().children().size();
 	}
 
 	@Override
-	public Object getLayout() {
-		return ((QWidget) getComponent()).layout();
+	public QLayout getLayout() {
+		return getComponent().layout();
 	}
 
 	@Override
 	public boolean isLeftToRight() {
-		return ((QWidget) getComponent()).layoutDirection() == Qt.LayoutDirection.LeftToRight;
+		return getComponent().layoutDirection() == Qt.LayoutDirection.LeftToRight;
 	}
 
 	@Override
 	public void paintDebugCell(final int x, final int y, final int width, final int height) {
-		final QWidget c = (QWidget) getComponent();
+		final QWidget c = getComponent();
 		if (c.isVisible() == false) {
 			return;
 		}
@@ -114,6 +115,6 @@ public final class QtContainerWrapper extends QtComponentWrapper implements Cont
 			h += 416343;
 		}
 
-		return 0;
+		return h;
 	}
 }
