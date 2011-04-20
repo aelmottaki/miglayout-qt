@@ -59,10 +59,13 @@ import com.trolltech.qt.gui.QScrollBar;
 import com.trolltech.qt.gui.QSlider;
 import com.trolltech.qt.gui.QTableView;
 import com.trolltech.qt.gui.QTextEdit;
+import com.trolltech.qt.gui.QToolBar;
 import com.trolltech.qt.gui.QTreeView;
 import com.trolltech.qt.gui.QWidget;
 
 public class QtComponentWrapper implements ComponentWrapper {
+	public static final int TYPE_TOOLBAR = 19;
+
 	private static final QPoint ORIGIN = new QPoint(0, 0);
 
 	/**
@@ -80,11 +83,23 @@ public class QtComponentWrapper implements ComponentWrapper {
 	private final QWidget c;
 	private int compType = TYPE_UNSET;
 	private QSize prefSize;
+	private final QSize size;
 
 	//private Boolean bl = null;
 
 	public QtComponentWrapper(final QWidget c) {
 		this.c = c;
+		this.size = c.size();
+		//		c.installEventFilter(new QObject() {
+		//			@Override
+		//			public boolean eventFilter(final QObject sender, final QEvent event) {
+		//				if (event.type() == QEvent.Type.Resize) {
+		//					final QResizeEvent resizeEvent = (QResizeEvent) event;
+		//					size = resizeEvent.size();
+		//				}
+		//				return false;
+		//			}
+		//		});
 	}
 
 	@Override
@@ -109,7 +124,7 @@ public class QtComponentWrapper implements ComponentWrapper {
 	}
 
 	@Override
-	public Object getComponent() {
+	public QWidget getComponent() {
 		return c;
 	}
 
@@ -197,13 +212,17 @@ public class QtComponentWrapper implements ComponentWrapper {
 
 	@Override
 	public final int getMinimumHeight(final int sz) {
+		if ((getComponetType(false) == TYPE_BUTTON)
+			|| (getComponetType(false) == TYPE_TOOLBAR)
+			|| (getComponetType(false) == TYPE_SEPARATOR)) {
+			return c.sizeHint().height();
+		}
 		return c.minimumSize().height();
 	}
 
 	@Override
 	public final int getMinimumWidth(final int sz) {
-		final int result = c.minimumSize().width();
-		return result;
+		return c.minimumSize().width();
 	}
 
 	private QSize getPreferredSize() {
@@ -223,25 +242,29 @@ public class QtComponentWrapper implements ComponentWrapper {
 
 	@Override
 	public final int getPreferredHeight(final int sz) {
-		//return getPreferredSize().height();
 		if (prefSize == null) {
 			prefSize = getPreferredSize();
+		}
+		if (prefSize == null) {
+			return sz;
 		}
 		return prefSize.height();
 	}
 
 	@Override
 	public final int getPreferredWidth(final int sz) {
-		//return getPreferredSize().width();
 		if (prefSize == null) {
 			prefSize = getPreferredSize();
+		}
+		if (prefSize == null) {
+			return sz;
 		}
 		return prefSize.width();
 	}
 
 	@Override
 	public final int getMaximumHeight(final int sz) {
-		if (getComponetType(false) == TYPE_BUTTON) {
+		if ((getComponetType(false) == TYPE_BUTTON) || (getComponetType(false) == TYPE_TOOLBAR)) {
 			return c.sizeHint().height();
 		}
 
@@ -255,7 +278,11 @@ public class QtComponentWrapper implements ComponentWrapper {
 
 	@Override
 	public final ContainerWrapper getParent() {
-		return new QtContainerWrapper(c.parentWidget());
+		if (c.parentWidget() != null) {
+			return new QtContainerWrapper(c.parentWidget());
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -307,20 +334,13 @@ public class QtComponentWrapper implements ComponentWrapper {
 
 		if (c instanceof QScrollArea) {
 			final QScrollArea scrollArea = (QScrollArea) c;
-			final QSize size = scrollArea.sizeHint();
-			scrollArea.widget().setMinimumSize(size);
+			scrollArea.widget().setMinimumSize(scrollArea.sizeHint());
 		}
 
 		c.setGeometry(rect);
 
-		prefSize = null;
-
 		// necessary for nested layout (progress bar problem in jo-widgets)
 		if (c.layout() != null) {
-			//			c.layout().setGeometry(
-			//					new QRect(c.contentsMargins().left(), c.contentsMargins().top(), width - c.contentsMargins().right(), height
-			//						- c.contentsMargins().bottom()));
-			//System.out.println("Left: " + c.contentsMargins().left() + " Top: " + c.contentsMargins().top());
 			c.layout().setGeometry(
 					new QRect(0, 0, width - c.contentsMargins().right() - c.contentsMargins().left(), height
 						- c.contentsMargins().bottom()
@@ -330,7 +350,12 @@ public class QtComponentWrapper implements ComponentWrapper {
 
 	@Override
 	public boolean isVisible() {
-		return c.isVisible();
+		if (c == null) {
+			return false;
+		}
+
+		return c.isVisibleTo(c.parentWidget());
+		//return c.isVisible();
 	}
 
 	@Override
@@ -387,38 +412,26 @@ public class QtComponentWrapper implements ComponentWrapper {
 
 	@Override
 	public int getLayoutHashCode() {
+		int result = 0;
 		if (c.nativeId() == 0) {
 			return 0;
 		}
 
-		int h = 0;
-		QSize d = null;
-
-		if (c.layout() != null) {
-			d = c.layout().sizeHint();
-		} else {
-			d = c.sizeHint();
+		if (prefSize != null) {
+			result += (prefSize.width() << 10) + (prefSize.height() << 15);
 		}
+		result += (size.width() << 30) + (size.height() << 35);
 
-		h += (d.width() << 10) + (d.height() << 15);
-		//
-		d = c.size();
-		h += (d.width() << 30) + (d.height() << 35);
-
-		if ((c != null) && (c.isVisible())) {
-			h += 1324511;
+		if (isVisible()) {
+			result += 1324511;
 		}
 
 		final String id = getLinkId();
 		if (id != null) {
-			h += id.hashCode();
+			result += id.hashCode();
 		}
-		return h;
 
-		// Since 2.3 will check the isValid instead everything that affects that can be removed from the layout hashcode.
-
-		//		String id = getLinkId();
-		//		return id != null ? id.hashCode() : 1;
+		return result;
 	}
 
 	private int checkType(final boolean disregardScrollPane) {
@@ -433,6 +446,10 @@ public class QtComponentWrapper implements ComponentWrapper {
 		if (item instanceof QLineEdit) {
 			return TYPE_TEXT_FIELD;
 		} else if (item instanceof QLabel) {
+			final QLabel label = (QLabel) item;
+			if (label.maximumHeight() == 2) {
+				return TYPE_SEPARATOR;
+			}
 			return TYPE_LABEL;
 		} else if (item instanceof QCheckBox) {
 			return TYPE_CHECK_BOX;
@@ -457,6 +474,8 @@ public class QtComponentWrapper implements ComponentWrapper {
 			return TYPE_PROGRESS_BAR;
 		} else if (item instanceof QSlider) {
 			return TYPE_SLIDER;
+		} else if (item instanceof QToolBar) {
+			return TYPE_TOOLBAR;
 		} else if (item instanceof QScrollArea) {
 			return TYPE_SCROLL_PANE;
 		} else if (item instanceof QScrollBar) {
@@ -502,4 +521,5 @@ public class QtComponentWrapper implements ComponentWrapper {
 	//		}
 	//	}
 	//CHECKSTYLE:ON
+
 }

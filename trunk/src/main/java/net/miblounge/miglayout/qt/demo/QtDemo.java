@@ -60,6 +60,7 @@ import com.trolltech.qt.gui.QBrush;
 import com.trolltech.qt.gui.QCheckBox;
 import com.trolltech.qt.gui.QColor;
 import com.trolltech.qt.gui.QComboBox;
+import com.trolltech.qt.gui.QFont;
 import com.trolltech.qt.gui.QFrame;
 import com.trolltech.qt.gui.QFrame.Shape;
 import com.trolltech.qt.gui.QGridLayout;
@@ -214,14 +215,14 @@ public class QtDemo extends QMainWindow {
 						+ "chained method calls. See the source code for details."},};
 
 	private static int benchRuns = 0;
-	private static long startupMillis = 0;
-	private static long timeToShowMillis = 0;
-	private static long benchRunTime = 0;
-	private static String benchOutFileName = null;
-	private static boolean append = false;
-
-	private static long lastRunTimeStart = 0;
-	private static StringBuffer runTimeSB = null;
+	//	private static long startupMillis = 0;
+	//	private static long timeToShowMillis = 0;
+	//	private static long benchRunTime = 0;
+	//	private static String benchOutFileName = null;
+	//	private static boolean append = false;
+	//
+	//	private static long lastRunTimeStart = 0;
+	//	private static StringBuffer runTimeSB = null;
 
 	// Helper...
 	private QPushButton winButt;
@@ -305,7 +306,7 @@ public class QtDemo extends QMainWindow {
 	}
 
 	public static void main(final String[] args) {
-		startupMillis = System.currentTimeMillis();
+		//startupMillis = System.currentTimeMillis();
 
 		if (args.length > 0) {
 			for (int i = 0; i < args.length; i++) {
@@ -317,13 +318,16 @@ public class QtDemo extends QMainWindow {
 							benchRuns = Integer.parseInt(arg.substring(6));
 						}
 					} catch (final Exception ex) {
+						// CHECKSTYLE:OFF
+						ex.printStackTrace();
+						// CHECKSTYLE:ON
 					}
-				} else if (arg.startsWith("-bout")) {
-					benchOutFileName = arg.substring(5);
-				} else if (arg.startsWith("-append")) {
-					append = true;
-				} else if (arg.startsWith("-verbose")) {
-					runTimeSB = new StringBuffer(256);
+					//} else if (arg.startsWith("-bout")) {
+					//benchOutFileName = arg.substring(5);
+					//} else if (arg.startsWith("-append")) {
+					//append = true;
+					//} else if (arg.startsWith("-verbose")) {
+					//runTimeSB = new StringBuffer(256);
 				} else {
 					System.out.println("Usage: [-bench[#_of_runs]] [-bout[benchmark_results_filename]] [-append]\n"
 						+ " -bench Run demo as benchmark. Run count can be appended. 10 is default.\n"
@@ -915,17 +919,34 @@ public class QtDemo extends QMainWindow {
 		for (int i = 0; i < 9; i++) {
 			final QWidget b = createPanel(result, "" + (i + 1), cellFlow);
 
-			// TODO: Font
-			// Font f = deriveFont(b, SWT.DEFAULT, 20);
-			// b.getChildren()[0].setFont(f);
+			b.setFont(deriveFont(b.font(), false, 20));
 		}
 
 		final QWidget b = createPanel(result, "5:2", cellFlow + ",cell 1 1");
-		// TODO: Font
-		// Font f = deriveFont(b, SWT.DEFAULT, 20);
-		// b.getChildren()[0].setFont(f);
+
+		b.setFont(deriveFont(b.font(), false, 20));
 
 		return result;
+	}
+
+	public static QFont deriveFont(final QFont baseFont, final boolean bold, final int size) {
+
+		final boolean italic = false;
+		final int weight;
+		if (bold) {
+			weight = QFont.Weight.Bold.value();
+		} else {
+			weight = QFont.Weight.Normal.value();
+		}
+
+		final int usedSize;
+		if (size < 0) {
+			usedSize = baseFont.pointSize() + size;
+		} else {
+			usedSize = size;
+		}
+
+		return new QFont(baseFont.family(), usedSize, weight, italic);
 	}
 
 	public QTabWidget createGrouping(final QWidget parent) {
@@ -1317,7 +1338,7 @@ public class QtDemo extends QMainWindow {
 		plt.setBrush(ColorRole.Window, new QBrush(new QColor(200, 200, 255)));
 		southLabel.setPalette(plt);
 		southLabel.setAutoFillBackground(true);
-		//deriveFont(southLabel, SWT.BOLD, 10);
+		southLabel.setFont(deriveFont(southLabel.font(), true, 10));
 
 		windowMovedListeningWidget = posPanel;
 
@@ -1502,7 +1523,7 @@ public class QtDemo extends QMainWindow {
 		createLabel(mainPanel, "Button Order:", "");
 		formatLabel = createLabel(mainPanel, "", "growx");
 		// TODO: Font
-		//deriveFont(formatLabel, SWT.BOLD , -1);
+		formatLabel.setFont(deriveFont(formatLabel.font(), true, -1));
 
 		winButt = createToggleButton(mainPanel, "Windows", "wmin button");
 		macButt = createToggleButton(mainPanel, "Mac OS X", "wmin button");
@@ -1767,7 +1788,9 @@ public class QtDemo extends QMainWindow {
 				layoutDisplayPanelLayout.addWidget(activeTab, "grow, wmin 500");
 				descrTextArea.setText(PANELS[ix][1]);
 			} catch (final Exception e1) {
+				// CHECKSTYLE:OFF
 				e1.printStackTrace(); // Should never happpen...
+				// CHECKSTYLE:ON
 			}
 
 			allowDispatch.set(true);
@@ -1813,7 +1836,9 @@ public class QtDemo extends QMainWindow {
 	 * }
 	 * });
 	 * } catch (Exception e) {
+	 * // CHECKSTYLE:OFF
 	 * e.printStackTrace();
+	 * // CHECKSTYLE:ON
 	 * }
 	 * 
 	 * display.syncExec(new Runnable() {
@@ -1845,7 +1870,9 @@ public class QtDemo extends QMainWindow {
 	 * }
 	 * });
 	 * } catch (Exception e) {
+	 * // CHECKSTYLE:OFF
 	 * e.printStackTrace();
+	 * // CHECKSTYLE:ON
 	 * };
 	 * }
 	 * }
@@ -1878,7 +1905,9 @@ public class QtDemo extends QMainWindow {
 	 * fw = new FileWriter(benchOutFileName, append);
 	 * fw.write(message);
 	 * } catch(IOException ex) {
+	 * // CHECKSTYLE:OFF
 	 * ex.printStackTrace();
+	 * // CHECKSTYLE:ON
 	 * } finally {
 	 * if (fw != null)
 	 * try {fw.close();} catch(IOException ex) {}
@@ -1887,7 +1916,9 @@ public class QtDemo extends QMainWindow {
 	 * }
 	 * });
 	 * 
+	 * // CHECKSTYLE:OFF
 	 * System.out.println(message);
+	 * // CHECKSTYLE:ON
 	 * 
 	 * if (benchOutFileName != null)
 	 * System.exit(0);
@@ -2082,7 +2113,6 @@ public class QtDemo extends QMainWindow {
 
 	protected void onClick() {
 		if (helpButt != null) {
-			System.out.println("Button click");
 			final QPoint pos = new QPoint(2, 2);
 			final MouseButtons mouse = new MouseButtons(MouseButton.LeftButton);
 			final KeyboardModifiers keyboard = new KeyboardModifiers(KeyboardModifier.NoModifier);
@@ -2091,8 +2121,6 @@ public class QtDemo extends QMainWindow {
 
 			final QEvent releaseEvent = new QMouseEvent(Type.MouseButtonRelease, pos, MouseButton.LeftButton, mouse, keyboard);
 			QApplication.postEvent(helpButt, releaseEvent);
-		} else {
-			System.out.println("winButt null");
 		}
 	}
 
