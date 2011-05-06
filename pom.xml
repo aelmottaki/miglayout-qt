@@ -13,6 +13,22 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	
+	<repositories>
+    <repository>
+        <id>qtjambi</id>
+        <name>qtjambi</name>
+        <url>http://qtjambi.sourceforge.net/maven2/</url>
+    </repository>
+	</repositories>
+	<pluginRepositories>
+    <pluginRepository>
+      <id>qtjambi</id>
+      <name>qtjambi</name>
+      <url>http://qtjambi.sourceforge.net/maven2/</url>
+    </pluginRepository>
+ 	</pluginRepositories>
+	
+	
 	<dependencies>
 		<dependency>
 			<groupId>com.miglayout</groupId>
