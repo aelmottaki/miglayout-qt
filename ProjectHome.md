@@ -1,0 +1,1 @@
+MigLayout is a very powerful layout manager for Java. This is an implementation for Qt.
